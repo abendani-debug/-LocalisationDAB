@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebFetch(domain:www.algerie-poste.dz)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:fr.wikipedia.org)",
+      "WebFetch(domain:ar.wikipedia.org)",
+      "WebFetch(domain:www.albaraka-bank.com.dz)",
+      "WebFetch(domain:www.alsalambank.com.dz)",
+      "WebFetch(domain:upload.wikimedia.org)",
+      "WebFetch(domain:www.agb.com.dz)",
+      "WebFetch(domain:banque-algerie.dz)",
+      "WebFetch(domain:www.trustbank.dz)",
+      "WebSearch",
+      "Bash(curl -s \"http://localhost:5173\")"
+    ]
+  }
+}

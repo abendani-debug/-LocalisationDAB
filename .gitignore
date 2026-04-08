@@ -1,0 +1,29 @@
+# Dépendances
+node_modules/
+
+# Variables d'environnement — NE JAMAIS COMMITER
+.env
+*.env.local
+
+# Build
+dist/
+dist-ssr/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Cache
+.vite/
+.cache/
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

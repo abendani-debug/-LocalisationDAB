@@ -1,0 +1,49 @@
+const rateLimit = require('express-rate-limit');
+const { errorResponse } = require('../utils/responseUtils');
+
+const handler = (req, res) =>
+  errorResponse(res, 'Trop de requêtes, veuillez réessayer plus tard.', 429);
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler,
+});
+
+// Lectures carte : plus généreux car la carte rafraîchit souvent
+const dabsReadLimiter = rateLimit({
+  windowMs: 60 * 1000,   // 1 minute
+  max: 60,               // 60 req/min par IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler,
+});
+
+const signalLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler,
+});
+
+// Propositions communautaires : max 10 par heure par IP
+const propositionLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler,
+});
+
+module.exports = { globalLimiter, authLimiter, signalLimiter, propositionLimiter, dabsReadLimiter };

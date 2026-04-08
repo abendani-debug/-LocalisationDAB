@@ -1,0 +1,188 @@
+/**
+ * Correspondance nom de banque → identité visuelle + logo officiel.
+ * Sources logos : Wikimedia Commons (licences libres).
+ */
+const BANK_CONFIGS = [
+  {
+    key: 'poste',
+    match: /algérie\s*poste|algerie\s*poste|alger\s*poste|\bccp\b|bureau de poste|la poste|\bposte\b|distributeur.*poste|gab.*poste|\bptt\b/i,
+    abbr: 'AP',
+    bg: '#F7A600',
+    text: '#fff',
+    label: 'Algérie Poste',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/72/AlgeriePoste.svg',
+  },
+  {
+    key: 'bna',
+    match: /\bBNA\b|banque nationale d.algérie|banque nationale d.algerie|البنك الوطني الجزائري/i,
+    abbr: 'BNA',
+    bg: '#006633',
+    text: '#fff',
+    label: 'BNA',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Bna-logo.svg',
+  },
+  {
+    key: 'bea',
+    match: /\bBEA\b|banque extérieure|banque exterieure|بنك الجزائر الخارجي/i,
+    abbr: 'BEA',
+    bg: '#003F87',
+    text: '#fff',
+    label: 'BEA',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/fr/e/e9/BEA.svg',
+  },
+  {
+    key: 'cpa',
+    match: /\bCPA\b|crédit populaire|credit populaire|القرض الشعبي الجزائري/i,
+    abbr: 'CPA',
+    bg: '#C8102E',
+    text: '#fff',
+    label: 'CPA',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/fr/d/dd/Cr%C3%A9dit_populaire_d%27Alg%C3%A9rie_logo.svg',
+  },
+  {
+    key: 'badr',
+    match: /\bBADR\b|banque.*(agriculture|développement rural|developpement rural)|التنمية الفلاحية|بنك الفلاحة/i,
+    abbr: 'BADR',
+    bg: '#1E7D3B',
+    text: '#fff',
+    label: 'BADR',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/fr/5/5c/Banque_de_l%E2%80%99agriculture_et_du_d%C3%A9veloppement_rural.svg',
+  },
+  {
+    key: 'bdl',
+    match: /\bBDL\b|banque de développement local|banque de developpement local|بنك التنمية المحلية/i,
+    abbr: 'BDL',
+    bg: '#1565C0',
+    text: '#fff',
+    label: 'BDL',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_BDL_Banque_DZ.svg',
+  },
+  {
+    key: 'cnep',
+    match: /\bCNEP\b|caisse nationale d.épargne|caisse nationale d.epargne|الصندوق الوطني للتوفير/i,
+    abbr: 'CNEP',
+    bg: '#0D47A1',
+    text: '#fff',
+    label: 'CNEP',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Logo_CNEP_banque_1_DZ.svg',
+  },
+  {
+    key: 'agb',
+    match: /\bAGB\b|algeria gulf bank|algerian gulf bank|gulf bank alger|بنك الخليج الجزائر/i,
+    abbr: 'AGB',
+    bg: '#1B2F6B',
+    text: '#F7C52D',
+    label: 'AGB',
+    logoUrl: null, // Pas de logo libre disponible sur Wikimedia
+  },
+  {
+    key: 'albaraka',
+    match: /al.?baraka/i,
+    abbr: 'AB',
+    bg: '#006B3F',
+    text: '#fff',
+    label: 'Al Baraka',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Al_Baraka_Banking_Group_Logo.svg',
+  },
+  {
+    key: 'alsalam',
+    match: /al.?salam\s*bank|مصرف السلام|بنك السلام/i,
+    abbr: 'AS',
+    bg: '#2E7D32',
+    text: '#fff',
+    label: 'Al Salam',
+    logoUrl: null,
+  },
+  {
+    key: 'bnp',
+    match: /bnp\s*paribas/i,
+    abbr: 'BNP',
+    bg: '#00965E',
+    text: '#fff',
+    label: 'BNP Paribas',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/8/85/BNP_Paribas_logo.svg',
+  },
+  {
+    key: 'sga',
+    match: /société générale|societe generale|\bSGA\b/i,
+    abbr: 'SGA',
+    bg: '#E30613',
+    text: '#fff',
+    label: 'SGA',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/Logo-SG-Soci%C3%A9t%C3%A9-G%C3%A9n%C3%A9rale.svg',
+    logoSize: 34,
+  },
+  {
+    key: 'natixis',
+    match: /natixis/i,
+    abbr: 'NAT',
+    bg: '#7B1FA2',
+    text: '#fff',
+    label: 'Natixis',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Natixis.svg',
+  },
+  {
+    key: 'abc',
+    match: /\bABC\b|arab banking corporation/i,
+    abbr: 'ABC',
+    bg: '#003F7F',
+    text: '#fff',
+    label: 'Bank ABC',
+    logoUrl: null,
+  },
+  {
+    key: 'arab',
+    match: /\barab bank\b|البنك العربي/i,
+    abbr: 'ARB',
+    bg: '#0D47A1',
+    text: '#fff',
+    label: 'Arab Bank',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Arab_Bank.svg',
+  },
+  {
+    key: 'housing',
+    match: /housing bank/i,
+    abbr: 'HB',
+    bg: '#0277BD',
+    text: '#fff',
+    label: 'Housing Bank',
+    logoUrl: null,
+  },
+  {
+    key: 'fransabank',
+    match: /fransabank/i,
+    abbr: 'FB',
+    bg: '#1A237E',
+    text: '#fff',
+    label: 'Fransabank',
+    logoUrl: null,
+  },
+  {
+    key: 'trust',
+    match: /trust\s*bank/i,
+    abbr: 'TB',
+    bg: '#37474F',
+    text: '#fff',
+    label: 'Trust Bank',
+    logoUrl: null,
+  },
+  {
+    key: 'citi',
+    match: /citibank/i,
+    abbr: 'CITI',
+    bg: '#003B70',
+    text: '#fff',
+    label: 'Citibank',
+    logoUrl: null,
+  },
+];
+
+/**
+ * Retourne la config visuelle d'une banque selon le nom du DAB.
+ * @param {string} nom
+ * @returns {{ abbr, bg, text, label, key, logoUrl } | null}
+ */
+export const getBankConfig = (nom) => {
+  if (!nom) return null;
+  return BANK_CONFIGS.find((b) => b.match.test(nom)) || null;
+};

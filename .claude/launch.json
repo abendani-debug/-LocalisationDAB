@@ -1,0 +1,20 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Backend (Express + Socket.io)",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "npm run dev"],
+      "cwd": "backend",
+      "port": 5000,
+      "autoPort": false
+    },
+    {
+      "name": "Frontend (Vite + React)",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "npm run dev"],
+      "cwd": "frontend",
+      "port": 5173
+    }
+  ]
+}
