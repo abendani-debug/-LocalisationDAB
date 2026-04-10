@@ -84,7 +84,7 @@ export default function HomePage() {
         </aside>
 
         {/* Map */}
-        <div className="flex-1">
+        <div className="flex-1 h-full min-h-0 overflow-hidden">
           <MapView
             dabs={dabs} userPosition={position}
             onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId}
