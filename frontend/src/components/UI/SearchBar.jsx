@@ -9,25 +9,15 @@ export default function SearchBar({ onSearch, placeholder = 'Rechercher un DAB�
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.5rem' }}>
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 h-10 focus-within:border-blue-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+      <span className="text-slate-400 text-sm">🔍</span>
       <input
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        style={{
-          flex: 1, padding: '0.5rem 0.75rem',
-          border: '1px solid #d1d5db', borderRadius: '0.375rem',
-          fontSize: '0.9rem', outline: 'none',
-        }}
+        className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-slate-400"
       />
-      <button type="submit" style={{
-        padding: '0.5rem 1rem', background: '#3b82f6',
-        color: '#fff', border: 'none', borderRadius: '0.375rem',
-        cursor: 'pointer', fontWeight: 600,
-      }}>
-        🔍
-      </button>
     </form>
   );
 }

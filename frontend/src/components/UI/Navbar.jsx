@@ -16,42 +16,43 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{
-      background: '#1e40af', color: '#fff',
-      padding: '0 1rem', height: '56px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.15)', position: 'sticky', top: 0, zIndex: 1000,
-    }}>
-      <Link to="/" style={{ color: '#fff', textDecoration: 'none', fontWeight: 700, fontSize: isMobile ? '1rem' : '1.1rem' }}>
-        🏧 {isMobile ? 'LocalDAB' : 'LocalisationDAB'}
+    <nav className="bg-white border-b border-slate-200 px-4 h-14 flex items-center justify-between sticky top-0 z-[1000] shadow-sm">
+      {/* Logo */}
+      <Link to="/" className="flex items-center gap-2 no-underline">
+        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white text-base leading-none">
+          💳
+        </div>
+        <span className="font-bold text-gray-900 text-[15px]">
+          Localisation<span className="text-blue-600">DAB</span>
+        </span>
       </Link>
 
       {/* Desktop nav */}
       {!isMobile && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="flex items-center gap-3">
           {isAdmin && (
-            <Link to="/admin" style={{ color: '#bfdbfe', textDecoration: 'none', fontSize: '0.9rem' }}>
+            <Link to="/admin" className="text-sm text-slate-500 hover:text-gray-900 no-underline transition-colors">
               Admin
             </Link>
           )}
           {isAuthenticated ? (
             <>
-              <span style={{ fontSize: '0.9rem', color: '#bfdbfe' }}>{user?.nom}</span>
-              <button onClick={handleLogout} style={{
-                background: 'none', border: '1px solid #bfdbfe',
-                color: '#bfdbfe', borderRadius: '0.375rem',
-                padding: '0.3rem 0.75rem', cursor: 'pointer', fontSize: '0.85rem',
-              }}>
+              <span className="text-sm text-slate-500">{user?.nom}</span>
+              <button
+                onClick={handleLogout}
+                className="h-[34px] px-4 rounded-lg border border-slate-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer bg-white"
+              >
                 Déconnexion
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" style={{ color: '#bfdbfe', textDecoration: 'none', fontSize: '0.9rem' }}>Connexion</Link>
-              <Link to="/register" style={{
-                background: '#2563eb', color: '#fff', padding: '0.3rem 0.75rem',
-                borderRadius: '0.375rem', textDecoration: 'none', fontSize: '0.85rem',
-              }}>Inscription</Link>
+              <Link to="/login" className="text-sm text-slate-500 hover:text-gray-900 no-underline transition-colors">
+                Connexion
+              </Link>
+              <Link to="/register" className="h-[34px] px-4 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors no-underline flex items-center">
+                Inscription
+              </Link>
             </>
           )}
         </div>
@@ -63,61 +64,42 @@ export default function Navbar() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Menu"
           aria-expanded={menuOpen}
-          style={{
-            background: 'none', border: 'none', color: '#fff',
-            cursor: 'pointer', padding: '0.5rem', display: 'flex',
-            flexDirection: 'column', gap: '5px', justifyContent: 'center',
-          }}
+          className="flex flex-col gap-[5px] justify-center p-2 bg-transparent border-none cursor-pointer"
         >
-          <span style={{ display: 'block', width: '22px', height: '2px', background: '#fff', borderRadius: '1px', transition: 'transform 0.2s', transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none' }} />
-          <span style={{ display: 'block', width: '22px', height: '2px', background: '#fff', borderRadius: '1px', opacity: menuOpen ? 0 : 1, transition: 'opacity 0.15s' }} />
-          <span style={{ display: 'block', width: '22px', height: '2px', background: '#fff', borderRadius: '1px', transition: 'transform 0.2s', transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
+          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
+            style={{ transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none' }} />
+          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-opacity duration-150"
+            style={{ opacity: menuOpen ? 0 : 1 }} />
+          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
+            style={{ transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
         </button>
       )}
 
-      {/* Mobile dropdown menu */}
+      {/* Mobile dropdown */}
       {isMobile && menuOpen && (
-        <div style={{
-          position: 'absolute', top: '56px', left: 0, right: 0,
-          background: '#1e3a8a', zIndex: 999,
-          display: 'flex', flexDirection: 'column',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-        }}>
+        <div className="absolute top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-md z-[999] flex flex-col">
           {isAdmin && (
-            <Link
-              to="/admin"
-              onClick={() => setMenuOpen(false)}
-              style={{ color: '#bfdbfe', textDecoration: 'none', padding: '0.9rem 1.25rem', fontSize: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}
-            >
+            <Link to="/admin" onClick={() => setMenuOpen(false)}
+              className="text-gray-700 no-underline px-5 py-4 text-base border-b border-slate-100 hover:bg-slate-50">
               ⚙️ Administration
             </Link>
           )}
           {isAuthenticated ? (
             <>
-              <span style={{ color: '#bfdbfe', padding: '0.9rem 1.25rem', fontSize: '0.9rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                👤 {user?.nom}
-              </span>
-              <button onClick={handleLogout} style={{
-                background: 'none', border: 'none', color: '#bfdbfe',
-                padding: '0.9rem 1.25rem', textAlign: 'left', cursor: 'pointer', fontSize: '1rem',
-              }}>
+              <span className="text-slate-500 px-5 py-4 text-sm border-b border-slate-100">👤 {user?.nom}</span>
+              <button onClick={handleLogout}
+                className="bg-transparent border-none text-gray-700 px-5 py-4 text-left cursor-pointer text-base hover:bg-slate-50">
                 Déconnexion
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                style={{ color: '#bfdbfe', textDecoration: 'none', padding: '0.9rem 1.25rem', fontSize: '1rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}
-              >
+              <Link to="/login" onClick={() => setMenuOpen(false)}
+                className="text-gray-700 no-underline px-5 py-4 text-base border-b border-slate-100 hover:bg-slate-50">
                 Connexion
               </Link>
-              <Link
-                to="/register"
-                onClick={() => setMenuOpen(false)}
-                style={{ color: '#fff', textDecoration: 'none', padding: '0.9rem 1.25rem', fontSize: '1rem', background: '#2563eb' }}
-              >
+              <Link to="/register" onClick={() => setMenuOpen(false)}
+                className="text-white no-underline px-5 py-4 text-base bg-blue-600 hover:bg-blue-700">
                 Inscription
               </Link>
             </>

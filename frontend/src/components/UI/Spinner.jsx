@@ -1,17 +1,10 @@
+const SIZES = { sm: 'w-4 h-4 border-2', md: 'w-8 h-8 border-2', lg: 'w-12 h-12 border-[3px]' };
+
 export default function Spinner({ size = 'md', label = 'Chargement…' }) {
-  const sizes = { sm: '1rem', md: '2rem', lg: '3rem' };
-  const s = sizes[size] || sizes.md;
   return (
-    <div role="status" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-      <div style={{
-        width: s, height: s,
-        border: '3px solid #e5e7eb',
-        borderTopColor: '#3b82f6',
-        borderRadius: '50%',
-        animation: 'spin 0.7s linear infinite',
-      }} />
-      <span style={{ fontSize: '0.85rem', color: '#6b7280' }}>{label}</span>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    <div role="status" className="flex flex-col items-center gap-2">
+      <div className={`${SIZES[size] || SIZES.md} border-slate-200 border-t-blue-600 rounded-full animate-spin`} />
+      <span className="text-sm text-slate-500">{label}</span>
     </div>
   );
 }
