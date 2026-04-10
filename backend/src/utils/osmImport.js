@@ -64,6 +64,34 @@ const ALGERIAN_CITIES = [
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Types qui indiquent clairement que le lieu n'est PAS un DAB → rejet total
+const REJECT_TYPES = new Set([
+  'restaurant', 'food', 'cafe', 'bar', 'meal_takeaway', 'meal_delivery',
+  'bakery', 'night_club', 'lodging', 'beauty_salon', 'hair_care',
+  'school', 'university', 'hospital', 'doctor', 'dentist',
+  'movie_theater', 'amusement_park', 'stadium', 'gym', 'spa',
+  'mosque', 'church', 'place_of_worship',
+]);
+
+// Types qui indiquent un ATM intégré dans un autre établissement → review admin
+const AMBIGUOUS_TYPES = new Set([
+  'supermarket', 'grocery_or_supermarket', 'store', 'clothing_store',
+  'convenience_store', 'department_store', 'shopping_mall',
+  'gas_station', 'pharmacy', 'drugstore', 'post_office',
+  'airport', 'train_station', 'bus_station', 'transit_station',
+]);
+
+/**
+ * Classifie un lieu retourné par Google Places pour type=atm.
+ * @returns {'accept' | 'review' | 'reject'}
+ */
+const classifyATM = (types = []) => {
+  if (!types.includes('atm')) return 'reject';
+  if (types.some(t => REJECT_TYPES.has(t))) return 'reject';
+  if (types.some(t => AMBIGUOUS_TYPES.has(t))) return 'review';
+  return 'accept';
+};
+
 /**
  * Récupère une page de résultats Google Places.
  */
@@ -127,19 +155,35 @@ const syncGooglePlaces = async () => {
 
   let inserted = 0;
   let updated  = 0;
+  let skipped  = 0;
   let errors   = 0;
 
   for (const place of places) {
     try {
+      const typeLieu = place._type === 'bank' ? 'agence' : 'atm';
+
+      // Filtrage qualité : uniquement pour les ATM
+      let isVerified = true;
+      if (place._type === 'atm') {
+        const classification = classifyATM(place.types || []);
+        if (classification === 'reject') {
+          skipped++;
+          continue;
+        }
+        if (classification === 'review') {
+          isVerified = false; // nécessite validation admin
+        }
+      }
+
       const result = await db.query(
-        `INSERT INTO dabs (osm_id, nom, adresse, latitude, longitude, statut, type)
-         VALUES ($1, $2, $3, $4, $5, 'actif', $6)
+        `INSERT INTO dabs (osm_id, nom, adresse, latitude, longitude, statut, type_lieu, source, is_verified)
+         VALUES ($1, $2, $3, $4, $5, 'actif', $6, 'google_places', $7)
          ON CONFLICT (osm_id) DO UPDATE SET
            nom        = EXCLUDED.nom,
            adresse    = EXCLUDED.adresse,
            latitude   = EXCLUDED.latitude,
            longitude  = EXCLUDED.longitude,
-           type       = EXCLUDED.type,
+           type_lieu  = EXCLUDED.type_lieu,
            updated_at = NOW()
          RETURNING (xmax = 0) AS is_insert`,
         [
@@ -148,7 +192,8 @@ const syncGooglePlaces = async () => {
           place.vicinity || null,
           place.geometry.location.lat,
           place.geometry.location.lng,
-          place._type,
+          typeLieu,
+          isVerified,
         ]
       );
       if (result.rows[0]?.is_insert) inserted++;
@@ -163,6 +208,7 @@ const syncGooglePlaces = async () => {
     total: places.length,
     inserted,
     updated,
+    skipped,
     errors,
     cities: ALGERIAN_CITIES.length - cityErrors,
   };
