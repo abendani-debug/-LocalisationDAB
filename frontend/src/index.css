@@ -2,7 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Leaflet fixes ───────────────────────────────────────────── */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  a { color: inherit; }
+  button { font-family: inherit; }
+  *, *::before, *::after { box-sizing: border-box; }
+}
+
+/* ── Leaflet fixes — Tailwind preflight breaks tile images ───── */
+.leaflet-container img {
+  max-width: none !important;
+  display: inline !important;
+}
+
+.leaflet-container {
+  font-family: inherit;
+}
+
 @media (max-width: 640px) {
   .leaflet-control-zoom { margin-bottom: 80px !important; }
   .leaflet-top.leaflet-right { top: auto !important; bottom: 140px !important; }
