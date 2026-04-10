@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import useIsMobile from '../../hooks/useIsMobile';
 import { MapContainer, TileLayer, CircleMarker, useMapEvents } from 'react-leaflet';
 import DABMarker from './DABMarker';
-import { FlyToPosition, LocateButton } from './MapControls';
+import { FlyToPosition, FlyToTarget, LocateButton } from './MapControls';
 import AddDABModal from './AddDABModal';
 import toast from 'react-hot-toast';
 
@@ -95,7 +95,7 @@ function AddModeBanner({ isMobile }) {
 }
 
 /* ── Composant principal ─────────────────────────────────────── */
-export default function MapView({ dabs = [], userPosition = null, onCenterChange, onSelectDAB, highlight = null }) {
+export default function MapView({ dabs = [], userPosition = null, onCenterChange, onSelectDAB, highlight = null, flyTo = null }) {
   const [addMode, setAddMode]           = useState(false);
   const [modalPosition, setModalPosition] = useState(null);
   const isMobile = useIsMobile();
@@ -134,6 +134,7 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
         />
 
         <MapClickHandler addMode={addMode} onMapClick={handleMapClick} onCenterChange={onCenterChange} />
+        {flyTo && <FlyToTarget target={flyTo} />}
 
         {userPosition && (
           <>

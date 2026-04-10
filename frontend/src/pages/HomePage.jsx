@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import MapView from '../components/Map/MapView';
 import DABList from '../components/DAB/DABList';
 import DABFilters from '../components/DAB/DABFilters';
@@ -18,7 +18,22 @@ export default function HomePage() {
   const [sheetOpen, setSheetOpen]         = useState(false);
   const [selectedDabId, setSelectedDabId] = useState(null);
   const [highlight, setHighlight]         = useState({ id: null, tick: 0 });
+  const [flyTo, setFlyTo]                 = useState(null);
+  const lastFliedBanque                   = useRef(null);
   const isMobile = useIsMobile();
+
+  /* ── Fly vers le premier DAB quand une banque est sélectionnée ── */
+  useEffect(() => {
+    if (!filters.banque_id) {
+      lastFliedBanque.current = null;
+      return;
+    }
+    if (loading || dabs.length === 0) return;
+    if (lastFliedBanque.current === filters.banque_id) return;
+    lastFliedBanque.current = filters.banque_id;
+    const first = dabs[0];
+    setFlyTo({ lat: first.latitude, lng: first.longitude });
+  }, [filters.banque_id, dabs, loading]);
 
   const handleHighlight = useCallback((id) => {
     setHighlight((prev) => ({ id, tick: prev.tick + 1 }));
@@ -56,7 +71,7 @@ export default function HomePage() {
           }
         </div>
         <div style={{ flex: 1 }}>
-          <MapView dabs={dabs} userPosition={position} onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId} highlight={highlight} />
+          <MapView dabs={dabs} userPosition={position} onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId} highlight={highlight} flyTo={flyTo} />
         </div>
         {selectedDabId && (
           <DABDetailModal dabId={selectedDabId} onClose={() => setSelectedDabId(null)} />
@@ -73,7 +88,7 @@ export default function HomePage() {
     <div style={{ position: 'relative', height: 'calc(100vh - 56px)', overflow: 'hidden' }}>
       {/* Carte plein écran */}
       <div style={{ position: 'absolute', inset: 0 }}>
-        <MapView dabs={dabs} userPosition={position} onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId} highlight={highlight} />
+        <MapView dabs={dabs} userPosition={position} onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId} highlight={highlight} flyTo={flyTo} />
       </div>
 
       {/* Bottom sheet */}

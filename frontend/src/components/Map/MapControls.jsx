@@ -1,6 +1,17 @@
 import { useMap } from 'react-leaflet';
 import { useEffect, useRef } from 'react';
 
+export function FlyToTarget({ target }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map || !target) return;
+    try {
+      map.flyTo([target.lat, target.lng], 15, { animate: true, duration: 1.2 });
+    } catch (_) {}
+  }, [map, target]);
+  return null;
+}
+
 export function FlyToPosition({ position }) {
   const map = useMap();
   const mounted = useRef(true);
