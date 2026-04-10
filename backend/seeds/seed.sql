@@ -17,7 +17,9 @@ INSERT INTO banques (nom) VALUES
   ('Algerie Poste'),
   ('Société Générale Algérie'),
   ('BNP Paribas El Djazaïr'),
-  ('Banque Salam')
+  ('Banque Salam'),
+  ('Banque Es Salam'),
+  ('Al Baraka Bank')
 ON CONFLICT (nom) DO NOTHING;
 
 -- -------------------------------------------------------------

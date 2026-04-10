@@ -37,7 +37,10 @@ export default function HomePage() {
 
   const handleHighlight = useCallback((id) => {
     setHighlight((prev) => ({ id, tick: prev.tick + 1 }));
-  }, []);
+    const dab = dabs.find((d) => d.id === id);
+    if (dab) setFlyTo({ lat: dab.latitude, lng: dab.longitude });
+    if (isMobile) setSheetOpen(false);
+  }, [dabs, isMobile]);
 
   const handleDabUpdate = useCallback(({ dabId, etatCommunautaire, votes, totalVotes }) => {
     const vote_dominant = !etatCommunautaire && votes && totalVotes > 0

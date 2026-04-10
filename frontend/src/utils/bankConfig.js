@@ -14,7 +14,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'bna',
-    match: /\bBNA\b|banque nationale d.algérie|banque nationale d.algerie|البنك الوطني الجزائري/i,
+    match: /\bBNA\b|B\.N\.A\.?|banque nationale d.algérie|banque nationale d.algerie|البنك الوطني الجزائري/i,
     abbr: 'BNA',
     bg: '#006633',
     text: '#fff',
@@ -23,7 +23,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'bea',
-    match: /\bBEA\b|banque extérieure|banque exterieure|بنك الجزائر الخارجي/i,
+    match: /\bBEA\b|B\.E\.A\.?|banque ext[eé]rieure|algeria.s external bank|بنك الجزائر الخارجي/i,
     abbr: 'BEA',
     bg: '#003F87',
     text: '#fff',
@@ -32,7 +32,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'cpa',
-    match: /\bCPA\b|crédit populaire|credit populaire|القرض الشعبي الجزائري/i,
+    match: /\bCPA\b|cr[eé]dit populaire|algerian popular loan|القرض الشعبي الجزائري/i,
     abbr: 'CPA',
     bg: '#C8102E',
     text: '#fff',
@@ -41,7 +41,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'badr',
-    match: /\bBADR\b|banque.*(agriculture|développement rural|developpement rural)|التنمية الفلاحية|بنك الفلاحة/i,
+    match: /\bBADR\b|B\.A\.D\.R\.?|banque.*(agriculture|d[eé]veloppement rural)|agricultural development bank|التنمية الفلاحية|بنك الفلاحة/i,
     abbr: 'BADR',
     bg: '#1E7D3B',
     text: '#fff',
@@ -50,7 +50,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'bdl',
-    match: /\bBDL\b|banque de développement local|banque de developpement local|بنك التنمية المحلية/i,
+    match: /\bBDL\b|B\.D\.L\.?|banque de d[eé]veloppement local|بنك التنمية المحلية/i,
     abbr: 'BDL',
     bg: '#1565C0',
     text: '#fff',
@@ -59,7 +59,7 @@ const BANK_CONFIGS = [
   },
   {
     key: 'cnep',
-    match: /\bCNEP\b|caisse nationale d.épargne|caisse nationale d.epargne|الصندوق الوطني للتوفير/i,
+    match: /\bCNEP\b|cnep.bank|caisse nationale d.[eé]pargne|الصندوق الوطني للتوفير/i,
     abbr: 'CNEP',
     bg: '#0D47A1',
     text: '#fff',
@@ -68,12 +68,12 @@ const BANK_CONFIGS = [
   },
   {
     key: 'agb',
-    match: /\bAGB\b|algeria gulf bank|algerian gulf bank|gulf bank alger|بنك الخليج الجزائر/i,
+    match: /\bAGB\b|A\.G\.B\.?|algeria gulf bank|algerian gulf bank|arab gulf bank|gulf bank alger|بنك الخليج الجزائر/i,
     abbr: 'AGB',
     bg: '#1B2F6B',
     text: '#F7C52D',
     label: 'AGB',
-    logoUrl: null, // Pas de logo libre disponible sur Wikimedia
+    logoUrl: '/logos/agb_bank_logo.svg',
   },
   {
     key: 'albaraka',
@@ -82,16 +82,16 @@ const BANK_CONFIGS = [
     bg: '#006B3F',
     text: '#fff',
     label: 'Al Baraka',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Al_Baraka_Banking_Group_Logo.svg',
+    logoUrl: '/logos/AL_Braka_bank_logo.png',
   },
   {
     key: 'alsalam',
-    match: /al.?salam\s*bank|مصرف السلام|بنك السلام/i,
-    abbr: 'AS',
-    bg: '#2E7D32',
-    text: '#fff',
-    label: 'Al Salam',
-    logoUrl: null,
+    match: /al.?salam\s*bank|banque\s*es.?salam|\bes.?salam\b|مصرف السلام|بنك السلام/i,
+    abbr: 'ES',
+    bg: '#1B5E20',
+    text: '#FFD700',
+    label: 'Banque Es Salam',
+    logoUrl: '/logos/Essalam_bank_logo.png',
   },
   {
     key: 'bnp',
@@ -128,7 +128,8 @@ const BANK_CONFIGS = [
     bg: '#003F7F',
     text: '#fff',
     label: 'Bank ABC',
-    logoUrl: null,
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/BankABCLogo.svg',
+    logoSize: 30,
   },
   {
     key: 'arab',
@@ -141,12 +142,12 @@ const BANK_CONFIGS = [
   },
   {
     key: 'housing',
-    match: /housing bank/i,
+    match: /housing bank|\bHBTF\b/i,
     abbr: 'HB',
     bg: '#0277BD',
     text: '#fff',
     label: 'Housing Bank',
-    logoUrl: null,
+    logoUrl: '/logos/housing_bank_logo.png',
   },
   {
     key: 'fransabank',
@@ -173,6 +174,15 @@ const BANK_CONFIGS = [
     bg: '#003B70',
     text: '#fff',
     label: 'Citibank',
+    logoUrl: null,
+  },
+  {
+    key: 'arba',
+    match: /arba\s*bank|بنك الأربعاء/i,
+    abbr: 'ARB',
+    bg: '#1A5276',
+    text: '#fff',
+    label: 'Arba Bank',
     logoUrl: null,
   },
 ];

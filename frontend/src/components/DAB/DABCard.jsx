@@ -12,7 +12,7 @@ export default function DABCard({ dab, onSelect, onHighlight }) {
 
   return (
     <div
-      onClick={() => { onHighlight?.(dab.id); onSelect?.(dab.id); }}
+      onClick={() => { onHighlight?.(dab.id); }}
       style={{
         background: '#fff', border: '1px solid #e5e7eb',
         borderRadius: '0.5rem', padding: '0.75rem 1rem',

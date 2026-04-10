@@ -45,25 +45,49 @@ style.textContent = `
     transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Highlight animation DAB marker */
-  @keyframes dabHighlight {
-    0%        { transform: scale(1)    translateX(0);    }
-    8%        { transform: scale(1.45) translateX(0);    }
-    18%       { transform: scale(1.45) translateX(-6px); }
-    28%       { transform: scale(1.45) translateX(6px);  }
-    38%       { transform: scale(1.45) translateX(-6px); }
-    48%       { transform: scale(1.45) translateX(6px);  }
-    58%       { transform: scale(1.45) translateX(-6px); }
-    68%       { transform: scale(1.45) translateX(6px);  }
-    80%       { transform: scale(1.45) translateX(0);    }
-    100%      { transform: scale(1)    translateX(0);    }
+  /* ── Animation cinématique DAB marker ───────────────────────── */
+  @keyframes dabSpring {
+    0%   { transform: scale(1);    filter: none; }
+    10%  { transform: scale(2.65); filter: drop-shadow(0 0 26px #60a5fa) drop-shadow(0 0 12px #2563eb); }
+    20%  { transform: scale(1.82); filter: drop-shadow(0 0 14px #3b82f6); }
+    34%  { transform: scale(2.32); filter: drop-shadow(0 0 22px #2563eb) drop-shadow(0 0 10px #1d4ed8); }
+    48%  { transform: scale(1.97); filter: drop-shadow(0 0 16px #2563eb); }
+    63%  { transform: scale(2.20); filter: drop-shadow(0 0 18px #2563eb) drop-shadow(0 0 8px #2563eb); }
+    79%  { transform: scale(2.06); filter: drop-shadow(0 0 16px #2563eb); }
+    100% { transform: scale(2.1);  filter: drop-shadow(0 0 16px #2563eb) drop-shadow(0 0 8px #2563eb) drop-shadow(0 0 3px #1d4ed8); }
   }
 
   .dab-marker-highlighted {
-    animation: dabHighlight 1.6s ease-in-out forwards;
-    transform-origin: bottom center;
     z-index: 9999 !important;
-    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
+  }
+
+  /* Base : aucune transition par défaut pour ne pas interférer avec le zoom Leaflet */
+  .dab-icon-inner {
+    transform-origin: bottom center;
+    will-change: transform;
+  }
+
+  /* Transition uniquement quand actif ou en cours d'animation */
+  .dab-marker-active .dab-icon-inner,
+  .dab-marker-highlighted .dab-icon-inner {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                filter   0.3s ease;
+  }
+
+  .dab-marker-highlighted .dab-icon-inner {
+    animation: dabSpring 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .dab-marker-active .dab-icon-inner {
+    transform: scale(2.1);
+    filter: drop-shadow(0 0 16px #2563eb) drop-shadow(0 0 8px #2563eb) drop-shadow(0 0 3px #1d4ed8);
+  }
+
+  /* Désactiver filter pendant l'animation de zoom Leaflet pour éviter les disparitions */
+  .leaflet-zoom-anim .dab-icon-inner {
+    filter: none !important;
+    transition: none !important;
+    animation: none !important;
   }
 `;
 document.head.appendChild(style);

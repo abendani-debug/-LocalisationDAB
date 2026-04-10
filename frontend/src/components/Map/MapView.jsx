@@ -1,13 +1,42 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import useIsMobile from '../../hooks/useIsMobile';
-import { MapContainer, TileLayer, CircleMarker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import DABMarker from './DABMarker';
 import { FlyToPosition, FlyToTarget, LocateButton } from './MapControls';
 import AddDABModal from './AddDABModal';
 import toast from 'react-hot-toast';
 
 const DEFAULT_LAT  = parseFloat(import.meta.env.VITE_MAP_DEFAULT_LAT  || '36.7372');
+
+const USER_ICON = L.divIcon({
+  className: '',
+  html: `
+    <div style="filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));">
+      <svg xmlns="http://www.w3.org/2000/svg" width="44" height="58" viewBox="0 0 44 58">
+        <!-- Tête -->
+        <circle cx="22" cy="7" r="6" fill="#dc2626"/>
+        <!-- Corps -->
+        <line x1="22" y1="13" x2="22" y2="32" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Bras gauche levé tenant le ? -->
+        <line x1="22" y1="18" x2="10" y2="12" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+        <!-- Bras droit balancé en arrière -->
+        <line x1="22" y1="18" x2="33" y2="24" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+        <!-- Jambe avant (gauche) -->
+        <line x1="22" y1="32" x2="14" y2="44" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="14" y1="44" x2="10" y2="54" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Jambe arrière (droite) -->
+        <line x1="22" y1="32" x2="30" y2="42" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="30" y1="42" x2="34" y2="50" stroke="#dc2626" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Point d'interrogation -->
+        <text x="5" y="14" font-size="13" font-weight="900" font-family="Arial,sans-serif" fill="#dc2626" stroke="#fff" stroke-width="0.5">?</text>
+      </svg>
+    </div>`,
+  iconSize:   [44, 58],
+  iconAnchor: [22, 58],
+});
+
 const DEFAULT_LNG  = parseFloat(import.meta.env.VITE_MAP_DEFAULT_LNG  || '3.0865');
 const DEFAULT_ZOOM = parseInt(import.meta.env.VITE_MAP_DEFAULT_ZOOM   || '13', 10);
 
@@ -138,10 +167,10 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
 
         {userPosition && (
           <>
-            <CircleMarker
-              center={[userPosition.lat, userPosition.lng]}
-              radius={8}
-              pathOptions={{ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.9 }}
+            <Marker
+              position={[userPosition.lat, userPosition.lng]}
+              icon={USER_ICON}
+              zIndexOffset={1000}
             />
             <FlyToPosition position={userPosition} />
             <LocateButton position={userPosition} />
@@ -155,6 +184,7 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
             userPosition={userPosition}
             onSelectDAB={onSelectDAB}
             highlightTick={highlight?.id === dab.id ? highlight.tick : 0}
+            isActive={highlight?.id === dab.id}
           />
         ))}
       </MapContainer>

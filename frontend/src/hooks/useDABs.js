@@ -11,8 +11,11 @@ export default function useDABs(position, filters = {}) {
     setLoading(true);
     setError(null);
     try {
+      const extra = {};
+      if (filters.banque_id) extra.banque_id = filters.banque_id;
+      if (filters.statut)    extra.statut    = filters.statut;
       const res = position.lat
-        ? await getNearbyDABs(position.lat, position.lng, filters.radius || 2)
+        ? await getNearbyDABs(position.lat, position.lng, filters.radius || 2, extra)
         : await getDABs(filters);
       setDabs(res.data || []);
     } catch {
@@ -20,7 +23,7 @@ export default function useDABs(position, filters = {}) {
     } finally {
       setLoading(false);
     }
-  }, [position, filters.radius]);
+  }, [position, filters.radius, filters.banque_id, filters.statut]);
 
   useEffect(() => { fetchDABs(); }, [fetchDABs]);
 

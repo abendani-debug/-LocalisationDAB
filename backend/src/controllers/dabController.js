@@ -11,8 +11,8 @@ const getAll = async (req, res) => {
 };
 
 const getNearby = async (req, res) => {
-  const { lat, lng, radius = 2 } = req.query;
-  const result = await DAB.findNearby(parseFloat(lat), parseFloat(lng), parseFloat(radius));
+  const { lat, lng, radius = 2, banque_id } = req.query;
+  const result = await DAB.findNearby(parseFloat(lat), parseFloat(lng), parseFloat(radius), banque_id || null);
   return successResponse(res, result.rows);
 };
 

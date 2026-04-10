@@ -18,7 +18,7 @@ const ETAT_SOLID = {
 
 const createIcon = (dab, statusColor) => {
   const border   = STATUS_BORDER[statusColor] || STATUS_BORDER.green;
-  const bankCfg  = getBankConfig(dab.nom);
+  const bankCfg  = getBankConfig(dab.banque_nom) || getBankConfig(dab.nom);
 
   let innerContent;
   let circleBg;
@@ -72,7 +72,7 @@ const createIcon = (dab, statusColor) => {
   }
 
   const html = `
-    <div style="
+    <div class="dab-icon-inner" style="
       position:relative;
       width:44px;height:54px;
       display:flex;flex-direction:column;align-items:center;
@@ -113,10 +113,10 @@ const createIcon = (dab, statusColor) => {
 
 /* ─── Composant ──────────────────────────────────────────────────── */
 
-export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTick }) {
+export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTick, isActive }) {
   const statusColor = etatColor(dab);
   const icon        = createIcon(dab, statusColor);
-  const bankCfg     = getBankConfig(dab.nom);
+  const bankCfg     = getBankConfig(dab.banque_nom) || getBankConfig(dab.nom);
   const markerRef   = useRef(null);
   const timerRef    = useRef(null);
 
@@ -133,10 +133,16 @@ export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTic
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       el.classList.remove('dab-marker-highlighted');
-    }, 1700);
+    }, 2300);
 
     return () => clearTimeout(timerRef.current);
   }, [highlightTick]);
+
+  useEffect(() => {
+    const el = markerRef.current?.getElement();
+    if (!el) return;
+    el.classList.toggle('dab-marker-active', !!isActive);
+  }, [isActive, highlightTick]);
 
   return (
     <Marker

@@ -37,8 +37,10 @@ const findAll = ({ lat, lng, radius, banque_id, statut, page = 1, limit = 20 }) 
   );
 };
 
-const findNearby = (lat, lng, radiusKm = 2) => {
+const findNearby = (lat, lng, radiusKm = 2, banque_id = null) => {
   const bb = boundingBox(lat, lng, radiusKm);
+  const params = [lat, lng, bb.minLat, bb.maxLat, bb.minLon, bb.maxLon, radiusKm];
+  const banqueCondition = banque_id ? `AND sub.banque_id = $${params.push(banque_id)}` : '';
   return db.query(
     `SELECT * FROM (
        SELECT d.*, b.nom AS banque_nom,
@@ -55,8 +57,9 @@ const findNearby = (lat, lng, radiusKm = 2) => {
          AND d.longitude BETWEEN $5 AND $6
      ) sub
      WHERE sub.distance_km <= $7
+     ${banqueCondition}
      ORDER BY sub.distance_km ASC`,
-    [lat, lng, bb.minLat, bb.maxLat, bb.minLon, bb.maxLon, radiusKm]
+    params
   );
 };
 

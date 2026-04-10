@@ -3,8 +3,8 @@ import api from './axiosConfig';
 export const getDABs = (params) =>
   api.get('/dabs', { params }).then((r) => r.data);
 
-export const getNearbyDABs = (lat, lng, radius = 2) =>
-  api.get('/dabs/nearby', { params: { lat, lng, radius } }).then((r) => r.data);
+export const getNearbyDABs = (lat, lng, radius = 2, extra = {}) =>
+  api.get('/dabs/nearby', { params: { lat, lng, radius, ...extra } }).then((r) => r.data);
 
 export const getDAB = (id) =>
   api.get(`/dabs/${id}`).then((r) => r.data);
