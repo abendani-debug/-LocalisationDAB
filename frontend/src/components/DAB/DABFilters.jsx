@@ -1,6 +1,48 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axiosConfig';
 
+const STATUTS = [
+  { value: '',              label: 'Tous' },
+  { value: 'actif',         label: 'Actif' },
+  { value: 'hors_service',  label: 'Hors service' },
+  { value: 'maintenance',   label: 'Maintenance' },
+];
+
+const RAYONS = [
+  { value: 1,  label: '1 km' },
+  { value: 2,  label: '2 km' },
+  { value: 5,  label: '5 km' },
+  { value: 10, label: '10 km' },
+];
+
+function ChipRow({ label, items, activeValue, onSelect, getKey, getLabel }) {
+  return (
+    <div className="px-4 py-2">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">{label}</p>
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {items.map((item) => {
+          const key   = getKey(item);
+          const text  = getLabel(item);
+          const active = String(activeValue) === String(key);
+          return (
+            <button
+              key={key}
+              onClick={() => onSelect(key)}
+              className={`flex-shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-all cursor-pointer
+                ${active
+                  ? 'border-blue-600 bg-blue-50 text-blue-600'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600'
+                }`}
+            >
+              {text}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DABFilters({ onFiltersChange }) {
   const [banques, setBanques] = useState([]);
   const [filters, setFilters] = useState({ banque_id: '', statut: '', radius: 2 });
@@ -15,56 +57,34 @@ export default function DABFilters({ onFiltersChange }) {
     onFiltersChange(next);
   };
 
-  const selectStyle = {
-    padding: '0.6rem 0.75rem',
-    border: '1px solid #d1d5db',
-    borderRadius: '0.5rem',
-    fontSize: '1rem',
-    background: '#fff',
-    width: '100%',
-    minHeight: '44px',
-    appearance: 'auto',
-  };
-
-  const labelStyle = {
-    display: 'block',
-    fontSize: '0.8rem',
-    fontWeight: 600,
-    color: '#6b7280',
-    marginBottom: '0.25rem',
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-  };
+  const banqueItems = [{ id: '', nom: 'Toutes' }, ...banques];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '0.75rem' }}>
-      <div>
-        <label style={labelStyle}>Banque</label>
-        <select value={filters.banque_id} onChange={(e) => handleChange('banque_id', e.target.value)} style={selectStyle}>
-          <option value="">Toutes les banques</option>
-          {banques.map((b) => <option key={b.id} value={b.id}>{b.nom}</option>)}
-        </select>
-      </div>
-
-      <div>
-        <label style={labelStyle}>Statut</label>
-        <select value={filters.statut} onChange={(e) => handleChange('statut', e.target.value)} style={selectStyle}>
-          <option value="">Tous les statuts</option>
-          <option value="actif">Actif</option>
-          <option value="hors_service">Hors service</option>
-          <option value="maintenance">Maintenance</option>
-        </select>
-      </div>
-
-      <div>
-        <label style={labelStyle}>Rayon de recherche</label>
-        <select value={filters.radius} onChange={(e) => handleChange('radius', e.target.value)} style={selectStyle}>
-          <option value="1">1 km</option>
-          <option value="2">2 km</option>
-          <option value="5">5 km</option>
-          <option value="10">10 km</option>
-        </select>
-      </div>
+    <div className="flex flex-col divide-y divide-slate-100">
+      <ChipRow
+        label="Banque"
+        items={banqueItems}
+        activeValue={filters.banque_id}
+        onSelect={(v) => handleChange('banque_id', v)}
+        getKey={(b) => b.id}
+        getLabel={(b) => b.nom}
+      />
+      <ChipRow
+        label="Statut"
+        items={STATUTS}
+        activeValue={filters.statut}
+        onSelect={(v) => handleChange('statut', v)}
+        getKey={(s) => s.value}
+        getLabel={(s) => s.label}
+      />
+      <ChipRow
+        label="Rayon"
+        items={RAYONS}
+        activeValue={filters.radius}
+        onSelect={(v) => handleChange('radius', Number(v))}
+        getKey={(r) => r.value}
+        getLabel={(r) => r.label}
+      />
     </div>
   );
 }
