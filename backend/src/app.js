@@ -34,6 +34,9 @@ app.use((req, res, next) => {
   return globalLimiter(req, res, next);
 });
 
+// ── Health check (Railway) ───────────────────────────────────
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
 // ── Routes ───────────────────────────────────────────────────
 app.use('/api/auth',     authRoutes);
 app.use('/api/dabs',     dabRoutes);
