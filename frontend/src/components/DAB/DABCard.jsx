@@ -1,15 +1,15 @@
 import { etatColor, statutLabel, etatLabel, formatDistance } from '../../utils/formatUtils';
 
 const BADGE = {
-  green:  'bg-green-100 text-green-700',
-  orange: 'bg-amber-100 text-amber-700',
-  red:    'bg-red-100   text-red-700',
+  green:  'bg-green-600 text-white',
+  orange: 'bg-amber-500 text-white',
+  red:    'bg-red-600   text-white',
 };
 
 const ETAT_BADGE = {
-  disponible: 'bg-green-100 text-green-700',
-  vide:       'bg-amber-100 text-amber-700',
-  en_panne:   'bg-red-100   text-red-700',
+  disponible: 'bg-green-600 text-white',
+  vide:       'bg-amber-500 text-white',
+  en_panne:   'bg-red-600   text-white',
 };
 
 export default function DABCard({ dab, onSelect, onHighlight }) {
