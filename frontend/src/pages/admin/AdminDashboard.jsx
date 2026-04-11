@@ -5,8 +5,8 @@ import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
 
 export default function AdminDashboard() {
-  const [stats, setStats]   = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats]       = useState(null);
+  const [loading, setLoading]   = useState(true);
   const [importing, setImporting] = useState(false);
 
   useEffect(() => {
@@ -28,57 +28,75 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) return <div style={{ padding: '3rem', textAlign: 'center' }}><Spinner /></div>;
+  if (loading) return <div className="py-16 flex justify-center"><Spinner /></div>;
 
   const totalDABs      = stats?.dabs?.reduce((s, r) => s + r.total, 0) || 0;
   const nbPropositions = stats?.propositions?.total || 0;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '1.5rem' }}>Administration</h1>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Administration</h1>
 
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-        <StatCard label="DAB total" value={totalDABs} />
-        <StatCard label="Utilisateurs" value={stats?.users?.total || 0} />
-        <StatCard label="Signalements actifs" value={stats?.signalements?.total || 0} />
+      {/* Stat cards */}
+      <div className="flex gap-3 flex-wrap mb-6">
+        <StatCard label="DAB total"              value={totalDABs} />
+        <StatCard label="Utilisateurs"           value={stats?.users?.total || 0} />
+        <StatCard label="Signalements actifs"    value={stats?.signalements?.total || 0} />
         <StatCard label="Propositions en attente" value={nbPropositions} highlight={nbPropositions > 0} />
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-        <Link to="/admin/dabs" style={linkBtn}>Gérer les DAB</Link>
-        <Link to="/admin/signalements" style={linkBtn}>Signalements</Link>
-        <Link to="/admin/propositions" style={{ ...linkBtn, background: nbPropositions > 0 ? '#b45309' : '#374151', position: 'relative' }}>
-          Propositions{nbPropositions > 0 && <span style={{ marginLeft: '0.4rem', background: '#fbbf24', color: '#78350f', borderRadius: '999px', padding: '0 6px', fontSize: '0.75rem', fontWeight: 700 }}>{nbPropositions}</span>}
+      {/* Actions */}
+      <div className="flex gap-2 flex-wrap mb-6">
+        <Link to="/admin/dabs" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+          Gérer les DAB
         </Link>
-        <button onClick={handleImportGoogle} disabled={importing} style={{ ...linkBtn, background: '#065f46', cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.7 : 1 }}>
+        <Link to="/admin/signalements" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
+          Signalements
+        </Link>
+        <Link
+          to="/admin/propositions"
+          className={`px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${nbPropositions > 0 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-slate-600 hover:bg-slate-700'}`}
+        >
+          Propositions
+          {nbPropositions > 0 && (
+            <span className="bg-amber-200 text-amber-900 rounded-full px-1.5 py-0.5 text-xs font-bold leading-none">
+              {nbPropositions}
+            </span>
+          )}
+        </Link>
+        <button
+          onClick={handleImportGoogle}
+          disabled={importing}
+          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+        >
           {importing ? 'Import en cours…' : 'Import Google Places'}
         </button>
       </div>
 
+      {/* Répartition statuts */}
       <div>
-        <h2 style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>Répartition par statut</h2>
-        {stats?.dabs?.map((row) => (
-          <div key={row.statut} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6', fontSize: '0.9rem' }}>
-            <span>{row.statut}</span>
-            <strong>{row.total}</strong>
-          </div>
-        ))}
+        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Répartition par statut</h2>
+        <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
+          {stats?.dabs?.map((row, i) => (
+            <div
+              key={row.statut}
+              className={`flex justify-between items-center px-4 py-2.5 text-sm ${i < stats.dabs.length - 1 ? 'border-b border-slate-100' : ''}`}
+            >
+              <span className="text-gray-700 capitalize">{row.statut}</span>
+              <strong className="text-gray-900">{row.total}</strong>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-const linkBtn = {
-  padding: '0.6rem 1.2rem', background: '#1e40af', color: '#fff',
-  borderRadius: '0.375rem', textDecoration: 'none', fontWeight: 600,
-  fontSize: '0.9rem', border: 'none',
-};
-
 function StatCard({ label, value, highlight = false }) {
   return (
-    <div style={{ background: '#fff', border: `1px solid ${highlight ? '#fbbf24' : '#e5e7eb'}`, borderRadius: '0.5rem', padding: '1rem 1.5rem', minWidth: '140px', textAlign: 'center' }}>
-      <p style={{ margin: 0, fontSize: '2rem', fontWeight: 700, color: highlight ? '#b45309' : '#1e40af' }}>{value}</p>
-      <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#6b7280' }}>{label}</p>
+    <div className={`bg-white border rounded-xl px-5 py-4 min-w-[140px] text-center ${highlight ? 'border-amber-300' : 'border-slate-100'}`}>
+      <p className={`m-0 text-3xl font-bold ${highlight ? 'text-amber-600' : 'text-blue-600'}`}>{value}</p>
+      <p className="m-0 mt-1 text-xs text-slate-500">{label}</p>
     </div>
   );
 }

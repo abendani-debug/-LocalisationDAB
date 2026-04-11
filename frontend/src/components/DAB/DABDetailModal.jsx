@@ -29,14 +29,12 @@ export default function DABDetailModal({ dabId, onClose }) {
     return () => leaveDABRoom(dabId);
   }, [dabId]);
 
-  /* Fermeture clavier */
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  /* Verrouillage du scroll body */
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -49,17 +47,16 @@ export default function DABDetailModal({ dabId, onClose }) {
     }
   }, []);
 
+  const panelClass = isMobile
+    ? 'bottom-0 left-0 right-0 h-[92dvh] rounded-t-2xl'
+    : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,720px)] max-h-[88vh] rounded-xl';
+
   const modal = (
     <>
       {/* Backdrop */}
       <div
         onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.5)',
-          zIndex: 2000,
-          WebkitTapHighlightColor: 'transparent',
-        }}
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[2000] [-webkit-tap-highlight-color:transparent]"
       />
 
       {/* Panel */}
@@ -67,99 +64,41 @@ export default function DABDetailModal({ dabId, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label={dab?.nom || 'Détail DAB'}
-        style={{
-          position: 'fixed',
-          zIndex: 2001,
-          background: '#fff',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          overflow: 'hidden',
-          ...(isMobile ? {
-            bottom: 0, left: 0, right: 0,
-            height: '92dvh',
-            borderRadius: '16px 16px 0 0',
-          } : {
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 'min(90vw, 720px)',
-            maxHeight: '88vh',
-            borderRadius: '12px',
-          }),
-        }}
+        className={`fixed z-[2001] bg-white flex flex-col shadow-2xl overflow-hidden ${panelClass}`}
       >
         {/* Poignée visuelle mobile */}
         {isMobile && (
           <div
             onClick={onClose}
-            style={{
-              flexShrink: 0,
-              display: 'flex',
-              justifyContent: 'center',
-              padding: '0.6rem 0 0.3rem',
-              cursor: 'pointer',
-            }}
+            className="flex-shrink-0 flex justify-center py-2.5 cursor-pointer"
           >
-            <div style={{ width: 40, height: 4, borderRadius: 2, background: '#d1d5db' }} />
+            <div className="w-10 h-1 bg-slate-200 rounded-full" />
           </div>
         )}
 
         {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: isMobile ? '0.5rem 1rem 0.6rem' : '0.75rem 1.25rem',
-          borderBottom: '1px solid #e5e7eb',
-          flexShrink: 0,
-          minHeight: 48,
-        }}>
-          <span style={{
-            fontWeight: 700,
-            fontSize: isMobile ? '1rem' : '1.05rem',
-            color: '#111827',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            marginRight: '0.5rem',
-          }}>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 flex-shrink-0 min-h-[48px]">
+          <span className="font-bold text-gray-900 text-base truncate mr-2">
             {loading ? 'Chargement…' : (dab?.nom || 'Détail DAB')}
           </span>
           <button
             onClick={onClose}
             aria-label="Fermer"
-            style={{
-              flexShrink: 0,
-              background: '#f3f4f6',
-              border: 'none',
-              borderRadius: '50%',
-              width: 36, height: 36,
-              cursor: 'pointer',
-              fontSize: '1rem',
-              color: '#6b7280',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              lineHeight: 1,
-            }}
+            className="flex-shrink-0 bg-slate-100 hover:bg-slate-200 rounded-full w-9 h-9 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Contenu scrollable */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch',
-        }}>
+        <div className="flex-1 overflow-y-auto [-webkit-overflow-scrolling:touch]">
           {loading && (
-            <div style={{ padding: '4rem', textAlign: 'center' }}>
+            <div className="py-16 flex justify-center">
               <Spinner />
             </div>
           )}
           {error && (
-            <div style={{ padding: '2rem' }}>
+            <div className="p-8">
               <ErrorMessage message={error} onRetry={load} />
             </div>
           )}

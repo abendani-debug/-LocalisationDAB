@@ -5,10 +5,10 @@ import { etatLabel, formatDate } from '../../utils/formatUtils';
 import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
 
-const ETAT_COLORS = {
-  disponible: '#065f46',
-  vide:       '#92400e',
-  en_panne:   '#991b1b',
+const ETAT_CLASS = {
+  disponible: 'bg-green-600',
+  vide:       'bg-amber-700',
+  en_panne:   'bg-red-700',
 };
 
 export default function AdminSignalements() {
@@ -36,39 +36,44 @@ export default function AdminSignalements() {
   };
 
   return (
-    <div style={{ padding: '1.5rem', maxWidth: '860px', margin: '0 auto' }}>
-      <h1 style={{ marginBottom: '1rem' }}>Signalements actifs</h1>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">Signalements actifs</h1>
 
-      {loading ? <Spinner /> : dabs.length === 0 ? (
-        <p style={{ color: '#6b7280' }}>Aucun signalement actif en ce moment.</p>
+      {loading ? (
+        <div className="py-16 flex justify-center"><Spinner /></div>
+      ) : dabs.length === 0 ? (
+        <p className="text-sm text-slate-500">Aucun signalement actif en ce moment.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div className="flex flex-col gap-2">
           {dabs.map((dab) => {
             const votes = dab.votes || {};
             const total = Object.values(votes).reduce((a, b) => a + b, 0);
             return (
-              <div key={dab.id} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem' }}>{dab.nom}</p>
+              <div key={dab.id} className="bg-white border border-slate-100 rounded-xl px-4 py-3 flex justify-between items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="m-0 font-semibold text-sm text-gray-900">{dab.nom}</p>
                   {dab.adresse && (
-                    <p style={{ margin: '0.1rem 0 0', fontSize: '0.75rem', color: '#9ca3af' }}>{dab.adresse}</p>
+                    <p className="mt-0.5 text-xs text-slate-400">{dab.adresse}</p>
                   )}
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
+                  <div className="flex gap-1.5 mt-1.5 flex-wrap items-center">
                     {Object.entries(votes).map(([etat, nb]) => (
-                      <span key={etat} style={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff', background: ETAT_COLORS[etat] || '#374151', borderRadius: '999px', padding: '0.1rem 0.6rem' }}>
+                      <span key={etat} className={`text-xs font-semibold text-white rounded-full px-2 py-0.5 ${ETAT_CLASS[etat] ?? 'bg-slate-500'}`}>
                         {etatLabel(etat)} × {nb}
                       </span>
                     ))}
-                    <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>{total} vote(s) au total</span>
+                    <span className="text-xs text-slate-400">{total} vote(s)</span>
                   </div>
                   {dab.etat_communautaire && (
-                    <p style={{ margin: '0.3rem 0 0', fontSize: '0.78rem', color: '#374151' }}>
+                    <p className="mt-1 text-xs text-gray-700">
                       État déclenché : <strong>{etatLabel(dab.etat_communautaire)}</strong>
                       {dab.etat_communautaire_at && ` · ${formatDate(dab.etat_communautaire_at)}`}
                     </p>
                   )}
                 </div>
-                <button onClick={() => handleResoudre(dab)} style={{ padding: '0.4rem 0.9rem', background: '#065f46', color: '#fff', border: 'none', borderRadius: '0.375rem', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, flexShrink: 0 }}>
+                <button
+                  onClick={() => handleResoudre(dab)}
+                  className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex-shrink-0 transition-colors cursor-pointer"
+                >
                   Résoudre
                 </button>
               </div>

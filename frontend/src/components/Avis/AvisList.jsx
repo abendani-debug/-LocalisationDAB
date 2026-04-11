@@ -7,7 +7,7 @@ import Spinner from '../UI/Spinner';
 
 export default function AvisList({ dabId }) {
   const { user, isAdmin } = useAuth();
-  const [data, setData]     = useState({ stats: null, avis: [] });
+  const [data, setData]       = useState({ stats: null, avis: [] });
   const [loading, setLoading] = useState(true);
 
   const load = () => {
@@ -32,33 +32,38 @@ export default function AvisList({ dabId }) {
   };
 
   if (loading) return <Spinner size="sm" />;
-  if (!data.avis.length) return <p style={{ color: '#9ca3af', fontSize: '0.85rem' }}>Aucun avis pour ce DAB.</p>;
+  if (!data.avis.length) return <p className="text-sm text-slate-400">Aucun avis pour ce DAB.</p>;
 
   return (
     <div>
       {data.stats?.total > 0 && (
-        <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#6b7280' }}>
+        <p className="text-xs text-slate-500 mb-3">
           {data.stats.total} avis · Moyenne : {data.stats.moyenne}/5
         </p>
       )}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="flex flex-col gap-3">
         {data.avis.map((a) => (
-          <div key={a.id} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '0.75rem 1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div key={a.id} className="bg-white border border-slate-100 rounded-xl px-4 py-3">
+            <div className="flex justify-between items-start">
               <div>
-                <span style={{ color: '#f59e0b', letterSpacing: '0.05em' }}>{starRating(a.note)}</span>
-                <span style={{ marginLeft: '0.5rem', fontWeight: 600, fontSize: '0.85rem' }}>{a.user_nom}</span>
+                <span className="text-amber-400 tracking-wide">{starRating(a.note)}</span>
+                <span className="ml-2 font-semibold text-sm text-gray-900">{a.user_nom}</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{formatDate(a.created_at)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">{formatDate(a.created_at)}</span>
                 {(isAdmin || user?.id === a.user_id) && (
-                  <button onClick={() => handleDelete(a.id)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem' }}>
+                  <button
+                    onClick={() => handleDelete(a.id)}
+                    className="text-xs text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+                  >
                     Supprimer
                   </button>
                 )}
               </div>
             </div>
-            {a.commentaire && <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: '#374151' }}>{a.commentaire}</p>}
+            {a.commentaire && (
+              <p className="mt-2 text-sm text-gray-700">{a.commentaire}</p>
+            )}
           </div>
         ))}
       </div>

@@ -10,12 +10,6 @@ const schema = z.object({
   password: z.string().min(8, 'Min 8 caractères').regex(/[A-Z]/, 'Doit contenir une majuscule').regex(/[0-9]/, 'Doit contenir un chiffre'),
 });
 
-const inputStyle = {
-  width: '100%', padding: '0.5rem 0.75rem', border: '1px solid #d1d5db',
-  borderRadius: '0.375rem', fontSize: '0.9rem', boxSizing: 'border-box',
-};
-const errorStyle = { color: '#dc2626', fontSize: '0.78rem', marginTop: '0.25rem' };
-
 export default function RegisterForm({ onSuccess }) {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema),
@@ -32,27 +26,39 @@ export default function RegisterForm({ onSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div>
-        <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', fontWeight: 500 }}>Nom</label>
-        <input type="text" {...register('nom')} style={inputStyle} />
-        {errors.nom && <p style={errorStyle}>{errors.nom.message}</p>}
+        <label className="block mb-1 text-sm font-medium text-gray-700">Nom</label>
+        <input
+          type="text"
+          {...register('nom')}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-colors"
+        />
+        {errors.nom && <p className="mt-1 text-xs text-red-600">{errors.nom.message}</p>}
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', fontWeight: 500 }}>Email</label>
-        <input type="email" {...register('email')} style={inputStyle} />
-        {errors.email && <p style={errorStyle}>{errors.email.message}</p>}
+        <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+        <input
+          type="email"
+          {...register('email')}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-colors"
+        />
+        {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
       </div>
       <div>
-        <label style={{ display: 'block', marginBottom: '0.25rem', fontSize: '0.85rem', fontWeight: 500 }}>Mot de passe</label>
-        <input type="password" {...register('password')} style={inputStyle} />
-        {errors.password && <p style={errorStyle}>{errors.password.message}</p>}
+        <label className="block mb-1 text-sm font-medium text-gray-700">Mot de passe</label>
+        <input
+          type="password"
+          {...register('password')}
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-colors"
+        />
+        {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
       </div>
-      <button type="submit" disabled={isSubmitting} style={{
-        padding: '0.6rem', background: '#1e40af', color: '#fff',
-        border: 'none', borderRadius: '0.375rem', fontWeight: 600,
-        cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1,
-      }}>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full h-11 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-colors"
+      >
         {isSubmitting ? 'Inscription…' : 'Créer mon compte'}
       </button>
     </form>

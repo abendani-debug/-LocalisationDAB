@@ -24,11 +24,15 @@ export default function AvisForm({ dabId, onSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ background: '#f9fafb', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1rem' }}>
-      <p style={{ margin: '0 0 0.5rem', fontWeight: 500, fontSize: '0.9rem' }}>Laisser un avis</p>
-      <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.75rem' }}>
+    <form onSubmit={handleSubmit} className="bg-slate-50 rounded-xl p-4 mb-4">
+      <p className="m-0 mb-2 font-semibold text-sm text-gray-900">Laisser un avis</p>
+      <div className="flex gap-1 mb-3">
         {[1,2,3,4,5].map((n) => (
-          <span key={n} onClick={() => setNote(n)} style={{ fontSize: '1.4rem', cursor: 'pointer', color: n <= note ? '#f59e0b' : '#d1d5db' }}>
+          <span
+            key={n}
+            onClick={() => setNote(n)}
+            className={`text-2xl cursor-pointer transition-colors ${n <= note ? 'text-amber-400' : 'text-slate-200'}`}
+          >
             ★
           </span>
         ))}
@@ -39,17 +43,13 @@ export default function AvisForm({ dabId, onSuccess }) {
         placeholder="Commentaire (optionnel)"
         maxLength={1000}
         rows={3}
-        style={{
-          width: '100%', padding: '0.5rem', border: '1px solid #d1d5db',
-          borderRadius: '0.375rem', fontSize: '0.85rem', resize: 'vertical', boxSizing: 'border-box',
-        }}
+        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white resize-vertical focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-colors"
       />
-      <button type="submit" disabled={loading || note < 1} style={{
-        marginTop: '0.5rem', padding: '0.5rem 1rem', background: '#1e40af',
-        color: '#fff', border: 'none', borderRadius: '0.375rem',
-        cursor: loading || note < 1 ? 'not-allowed' : 'pointer', opacity: loading || note < 1 ? 0.7 : 1,
-        fontSize: '0.85rem', fontWeight: 600,
-      }}>
+      <button
+        type="submit"
+        disabled={loading || note < 1}
+        className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors"
+      >
         {loading ? 'Publication…' : 'Publier'}
       </button>
     </form>

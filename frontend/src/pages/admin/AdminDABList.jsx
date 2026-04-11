@@ -6,9 +6,9 @@ import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
 
 export default function AdminDABList() {
-  const [dabs, setDabs]     = useState([]);
+  const [dabs, setDabs]       = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage]     = useState(1);
+  const [page, setPage]       = useState(1);
 
   const load = () => {
     setLoading(true);
@@ -31,44 +31,69 @@ export default function AdminDABList() {
   };
 
   return (
-    <div style={{ padding: '1.5rem', maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h1 style={{ margin: 0 }}>DAB</h1>
-        <Link to="/admin/dabs/new" style={{ padding: '0.5rem 1rem', background: '#1e40af', color: '#fff', borderRadius: '0.375rem', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600 }}>
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="m-0 text-2xl font-bold text-gray-900">DAB</h1>
+        <Link to="/admin/dabs/new" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
           + Nouveau DAB
         </Link>
       </div>
 
-      {loading ? <Spinner /> : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-          <thead>
-            <tr style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-              {['Nom', 'Banque', 'Statut', 'État signalé', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: '0.6rem 0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {dabs.map((dab) => (
-              <tr key={dab.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                <td style={{ padding: '0.6rem 0.75rem', fontWeight: 500 }}>{dab.nom}</td>
-                <td style={{ padding: '0.6rem 0.75rem', color: '#6b7280' }}>{dab.banque_nom || '—'}</td>
-                <td style={{ padding: '0.6rem 0.75rem' }}>{statutLabel(dab.statut)}</td>
-                <td style={{ padding: '0.6rem 0.75rem' }}>{dab.etat_communautaire ? etatLabel(dab.etat_communautaire) : '—'}</td>
-                <td style={{ padding: '0.6rem 0.75rem', display: 'flex', gap: '0.5rem' }}>
-                  <Link to={`/admin/dabs/${dab.id}/edit`} style={{ color: '#3b82f6', fontSize: '0.8rem' }}>Modifier</Link>
-                  <button onClick={() => handleDelete(dab.id, dab.nom)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem' }}>Supprimer</button>
-                </td>
+      {loading ? (
+        <div className="py-16 flex justify-center"><Spinner /></div>
+      ) : (
+        <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                {['Nom', 'Banque', 'Statut', 'État signalé', 'Actions'].map((h) => (
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {dabs.map((dab, i) => (
+                <tr key={dab.id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${i === dabs.length - 1 ? 'border-b-0' : ''}`}>
+                  <td className="px-4 py-3 font-medium text-gray-900">{dab.nom}</td>
+                  <td className="px-4 py-3 text-slate-500">{dab.banque_nom || '—'}</td>
+                  <td className="px-4 py-3 text-gray-700">{statutLabel(dab.statut)}</td>
+                  <td className="px-4 py-3 text-gray-700">{dab.etat_communautaire ? etatLabel(dab.etat_communautaire) : '—'}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-3">
+                      <Link to={`/admin/dabs/${dab.id}/edit`} className="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                        Modifier
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(dab.id, dab.nom)}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors cursor-pointer"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'center' }}>
-        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer' }}>←</button>
-        <span style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem' }}>Page {page}</span>
-        <button onClick={() => setPage((p) => p + 1)} disabled={dabs.length < 30} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer' }}>→</button>
+      <div className="flex gap-2 mt-4 justify-center items-center">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        >
+          ←
+        </button>
+        <span className="px-3 py-1.5 text-sm text-slate-500">Page {page}</span>
+        <button
+          onClick={() => setPage((p) => p + 1)}
+          disabled={dabs.length < 30}
+          className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-gray-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        >
+          →
+        </button>
       </div>
     </div>
   );
