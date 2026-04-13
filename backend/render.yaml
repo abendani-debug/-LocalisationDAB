@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: localisation-dab-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node scripts/migrate.js && node src/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: localisation-dab-db
+          property: connectionString
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: SIGNALEMENT_SEUIL
+        value: 2
+      - key: SIGNALEMENT_DUREE_HEURES
+        value: 4
+      - key: DEFAULT_LAT
+        value: 36.7372
+      - key: DEFAULT_LNG
+        value: 3.0865
+      - key: SEARCH_RADIUS_KM
+        value: 20
+      # À renseigner manuellement dans le dashboard Render :
+      # JWT_SECRET, IP_SALT, GOOGLE_PLACES_API_KEY, CORS_ORIGIN
+
+databases:
+  - name: localisation-dab-db
+    plan: free
+    region: frankfurt
