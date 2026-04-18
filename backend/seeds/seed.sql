@@ -42,10 +42,10 @@ INSERT INTO users (nom, email, password_hash, role) VALUES
   (
     'Admin',
     'admin@localisation-dab.dz',
-    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/lewbxPnhNsS.4mxPK',
+    '$2a$12$ICCnfFrPBQQwkZXdfGaMMelznfYK6EMC7zF2nQC6hsQGXFM49cURq',
     'admin'
   )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- Utilisateur standard de test
 -- Password : User1234!
@@ -53,10 +53,10 @@ INSERT INTO users (nom, email, password_hash, role) VALUES
   (
     'Utilisateur Test',
     'user@localisation-dab.dz',
-    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/lewbxPnhNsS.4mxPK',
+    '$2a$12$X/hPdoeTSmp9TyL4h42FOOaYrBIPpB.DSutsNGFn7aNXIKSYhdn/S',
     'user'
   )
-ON CONFLICT (email) DO NOTHING;
+ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- -------------------------------------------------------------
 -- DAB de test (Alger centre)

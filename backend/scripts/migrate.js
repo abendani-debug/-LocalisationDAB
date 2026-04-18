@@ -11,6 +11,8 @@ async function migrate() {
   const files = [
     '../migrations/001_init.sql',
     '../migrations/002_add_community_dab.sql',
+    '../migrations/003_osm_id_size.sql',
+    '../migrations/004_add_banque_salam.sql',
     '../seeds/seed.sql',
   ];
 
