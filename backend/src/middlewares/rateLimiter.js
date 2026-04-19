@@ -12,10 +12,10 @@ const globalLimiter = rateLimit({
   handler,
 });
 
-// Lectures carte : plus généreux car la carte rafraîchit souvent
+// Lectures carte : généreux car la carte peut rafraîchir souvent
 const dabsReadLimiter = rateLimit({
   windowMs: 60 * 1000,   // 1 minute
-  max: 60,               // 60 req/min par IP
+  max: 300,              // 300 req/min par IP (5/sec)
   standardHeaders: true,
   legacyHeaders: false,
   handler,
