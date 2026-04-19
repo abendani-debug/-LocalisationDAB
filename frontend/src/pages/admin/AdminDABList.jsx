@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getDABs, deleteDAB } from '../../api/dabApi';
+import api from '../../api/axiosConfig';
 import { statutLabel, etatLabel } from '../../utils/formatUtils';
 import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
@@ -9,15 +10,37 @@ export default function AdminDABList() {
   const [dabs, setDabs]       = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage]       = useState(1);
+  const [search, setSearch]   = useState('');
+  const [banques, setBanques] = useState([]);
+  const [banqueId, setBanqueId] = useState('');
 
-  const load = () => {
+  useEffect(() => {
+    api.get('/banques').then((r) => setBanques(r.data.data || [])).catch(() => {});
+  }, []);
+
+  const load = useCallback(() => {
     setLoading(true);
-    getDABs({ page, limit: 30 })
-      .then((r) => setDabs(r.data || []))
+    const params = { page, limit: 30 };
+    if (banqueId) params.banque_id = banqueId;
+    getDABs(params)
+      .then((r) => {
+        let data = r.data || [];
+        if (search.trim()) {
+          const q = search.trim().toLowerCase();
+          data = data.filter((d) =>
+            d.nom?.toLowerCase().includes(q) ||
+            d.adresse?.toLowerCase().includes(q)
+          );
+        }
+        setDabs(data);
+      })
       .finally(() => setLoading(false));
-  };
+  }, [page, banqueId, search]);
 
-  useEffect(load, [page]);
+  useEffect(() => { load(); }, [load]);
+
+  // Remettre à la page 1 quand les filtres changent
+  useEffect(() => { setPage(1); }, [banqueId, search]);
 
   const handleDelete = async (id, nom) => {
     if (!window.confirm(`Supprimer "${nom}" ?`)) return;
@@ -39,8 +62,44 @@ export default function AdminDABList() {
         </Link>
       </div>
 
+      {/* Barre de recherche + filtre banque */}
+      <div className="flex gap-3 mb-4">
+        <div className="relative flex-1">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+          <input
+            type="text"
+            placeholder="Rechercher par nom ou adresse…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <select
+          value={banqueId}
+          onChange={(e) => setBanqueId(e.target.value)}
+          className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
+        >
+          <option value="">Toutes les banques</option>
+          {banques.map((b) => (
+            <option key={b.id} value={b.id}>{b.nom}</option>
+          ))}
+        </select>
+        {(search || banqueId) && (
+          <button
+            onClick={() => { setSearch(''); setBanqueId(''); }}
+            className="px-3 py-2 text-sm text-slate-500 hover:text-gray-700 border border-slate-200 rounded-lg transition-colors cursor-pointer"
+          >
+            Réinitialiser
+          </button>
+        )}
+      </div>
+
       {loading ? (
         <div className="py-16 flex justify-center"><Spinner /></div>
+      ) : dabs.length === 0 ? (
+        <div className="py-16 text-center text-slate-400 text-sm">
+          Aucun DAB trouvé pour ces critères.
+        </div>
       ) : (
         <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
           <table className="w-full text-sm border-collapse">
