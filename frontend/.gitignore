@@ -22,3 +22,5 @@ Thumbs.db
 
 # Cache Vite
 .vite/
+
+.vercel

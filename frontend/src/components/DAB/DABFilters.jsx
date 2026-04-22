@@ -13,6 +13,8 @@ const RAYONS = [
   { value: 2,  label: '2 km' },
   { value: 5,  label: '5 km' },
   { value: 10, label: '10 km' },
+  { value: 20, label: '20 km' },
+  { value: 50, label: '50 km' },
 ];
 
 function ChipRow({ label, items, activeValue, onSelect, getKey, getLabel }) {
