@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { I18nextProvider } from 'react-i18next';
@@ -5,6 +6,7 @@ import i18n from './i18n';
 import AuthProvider from './context/AuthContext';
 import useAuth from './hooks/useAuth';
 import Navbar from './components/UI/Navbar';
+import SplashScreen from './components/UI/SplashScreen';
 
 import HomePage          from './pages/HomePage';
 import DABDetailPage     from './pages/DABDetailPage';
@@ -52,14 +54,29 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(() => {
+    const last = localStorage.getItem('splash_last_shown');
+    if (!last) return true;
+    const diff = Date.now() - parseInt(last, 10);
+    return diff > 24 * 60 * 60 * 1000;
+  });
+  const handleSplashDone = useCallback(() => {
+    localStorage.setItem('splash_last_shown', Date.now().toString());
+    setShowSplash(false);
+  }, []);
+
   return (
     <I18nextProvider i18n={i18n}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-          <AppRoutes />
-        </AuthProvider>
-      </BrowserRouter>
+      {showSplash ? (
+        <SplashScreen onDone={handleSplashDone} />
+      ) : (
+        <BrowserRouter>
+          <AuthProvider>
+            <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+            <AppRoutes />
+          </AuthProvider>
+        </BrowserRouter>
+      )}
     </I18nextProvider>
   );
 }
