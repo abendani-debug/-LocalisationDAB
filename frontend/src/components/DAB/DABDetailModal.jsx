@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { getDAB } from '../../api/dabApi';
 import DABDetail from './DABDetail';
 import Spinner from '../UI/Spinner';
@@ -8,6 +9,7 @@ import { joinDABRoom, leaveDABRoom } from '../../hooks/useSocket';
 import useIsMobile from '../../hooks/useIsMobile';
 
 export default function DABDetailModal({ dabId, onClose }) {
+  const { t } = useTranslation();
   const [dab, setDab]         = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
@@ -63,7 +65,7 @@ export default function DABDetailModal({ dabId, onClose }) {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={dab?.nom || 'Détail DAB'}
+        aria-label={dab?.nom || t('dab.detail')}
         className={`fixed z-[2001] bg-white flex flex-col shadow-2xl overflow-hidden ${panelClass}`}
       >
         {/* Poignée visuelle mobile */}
@@ -79,11 +81,11 @@ export default function DABDetailModal({ dabId, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 flex-shrink-0 min-h-[48px]">
           <span className="font-bold text-gray-900 text-base truncate mr-2">
-            {loading ? 'Chargement…' : (dab?.nom || 'Détail DAB')}
+            {loading ? t('common.loading') : (dab?.nom || t('dab.detail'))}
           </span>
           <button
             onClick={onClose}
-            aria-label="Fermer"
+            aria-label={t('dab.close')}
             className="flex-shrink-0 bg-slate-100 hover:bg-slate-200 rounded-full w-9 h-9 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
           >
             ✕

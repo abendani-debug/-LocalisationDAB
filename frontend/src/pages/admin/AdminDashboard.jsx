@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axiosConfig';
 import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const [stats, setStats]       = useState(null);
   const [loading, setLoading]   = useState(true);
   const [importing, setImporting] = useState(false);
@@ -20,9 +22,9 @@ export default function AdminDashboard() {
     try {
       const res = await api.post('/admin/import-google');
       const d = res.data.data;
-      toast.success(`Import Google Places : ${d.inserted} ajoutés, ${d.updated} mis à jour.`);
+      toast.success(t('admin.import_success', { inserted: d.inserted, updated: d.updated }));
     } catch {
-      toast.error('Erreur lors de l\'import Google Places.');
+      toast.error(t('admin.import_error'));
     } finally {
       setImporting(false);
     }
@@ -35,29 +37,29 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Administration</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('admin.title')}</h1>
 
       {/* Stat cards */}
       <div className="flex gap-3 flex-wrap mb-6">
-        <StatCard label="DAB total"              value={totalDABs} />
-        <StatCard label="Utilisateurs"           value={stats?.users?.total || 0} />
-        <StatCard label="Signalements actifs"    value={stats?.signalements?.total || 0} />
-        <StatCard label="Propositions en attente" value={nbPropositions} highlight={nbPropositions > 0} />
+        <StatCard label={t('admin.total_dabs')}         value={totalDABs} />
+        <StatCard label={t('admin.users')}              value={stats?.users?.total || 0} />
+        <StatCard label={t('admin.active_reports')}     value={stats?.signalements?.total || 0} />
+        <StatCard label={t('admin.pending_proposals')}  value={nbPropositions} highlight={nbPropositions > 0} />
       </div>
 
       {/* Actions */}
       <div className="flex gap-2 flex-wrap mb-6">
         <Link to="/admin/dabs" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
-          Gérer les DAB
+          {t('admin.manage_dabs')}
         </Link>
         <Link to="/admin/signalements" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
-          Signalements
+          {t('admin.reports')}
         </Link>
         <Link
           to="/admin/propositions"
           className={`px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${nbPropositions > 0 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-slate-600 hover:bg-slate-700'}`}
         >
-          Propositions
+          {t('admin.proposals')}
           {nbPropositions > 0 && (
             <span className="bg-amber-200 text-amber-900 rounded-full px-1.5 py-0.5 text-xs font-bold leading-none">
               {nbPropositions}
@@ -69,13 +71,13 @@ export default function AdminDashboard() {
           disabled={importing}
           className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
         >
-          {importing ? 'Import en cours…' : 'Import Google Places'}
+          {importing ? t('admin.importing') : t('admin.import_google')}
         </button>
       </div>
 
       {/* Répartition statuts */}
       <div>
-        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Répartition par statut</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">{t('admin.status_distribution')}</h2>
         <div className="bg-white border border-slate-100 rounded-xl overflow-hidden">
           {stats?.dabs?.map((row, i) => (
             <div

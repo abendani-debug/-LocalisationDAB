@@ -1,4 +1,5 @@
-import { etatColor, statutLabel, etatLabel, formatDate } from '../../utils/formatUtils';
+import { useTranslation } from 'react-i18next';
+import { etatColor, formatDate } from '../../utils/formatUtils';
 import SignalementBadge from '../Signalement/SignalementBadge';
 import SignalementButton from '../Signalement/SignalementButton';
 import AvisList from '../Avis/AvisList';
@@ -12,9 +13,27 @@ const DOT_CLASS = {
   gray:   'bg-gray-400',
 };
 
+const STATUT_KEY = {
+  actif:        'filters.active',
+  hors_service: 'filters.out_of_service',
+  maintenance:  'filters.maintenance',
+};
+
+const ETAT_KEY = {
+  disponible: 'common.state_available',
+  vide:       'common.state_empty',
+  en_panne:   'common.state_broken',
+};
+
 export default function DABDetail({ dab, onSignalement }) {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const color = etatColor(dab);
+
+  const statutTrad = STATUT_KEY[dab.statut] ? t(STATUT_KEY[dab.statut]) : dab.statut;
+  const etatTrad   = dab.etat_communautaire
+    ? (ETAT_KEY[dab.etat_communautaire] ? t(ETAT_KEY[dab.etat_communautaire]) : dab.etat_communautaire)
+    : '—';
 
   return (
     <div className="max-w-[680px] mx-auto p-4">
@@ -31,19 +50,19 @@ export default function DABDetail({ dab, onSignalement }) {
 
       {/* Infos */}
       <div className="bg-slate-50 rounded-xl p-4 mb-4 flex flex-wrap gap-4">
-        <Info label="Statut admin"  value={statutLabel(dab.statut)} />
-        <Info label="État signalé"  value={dab.etat_communautaire ? etatLabel(dab.etat_communautaire) : '—'} />
-        {dab.banque_nom && <Info label="Banque" value={dab.banque_nom} />}
-        {dab.etat_communautaire_at && <Info label="Mis à jour" value={formatDate(dab.etat_communautaire_at)} />}
+        <Info label={t('dab.status_admin')}  value={statutTrad} />
+        <Info label={t('dab.state_reported')} value={etatTrad} />
+        {dab.banque_nom && <Info label={t('dab.bank')} value={dab.banque_nom} />}
+        {dab.etat_communautaire_at && <Info label={t('dab.updated')} value={formatDate(dab.etat_communautaire_at)} />}
         {dab.services?.length > 0 && (
-          <Info label="Services" value={dab.services.map((s) => s.nom).join(', ')} />
+          <Info label={t('dab.services')} value={dab.services.map((s) => s.nom).join(', ')} />
         )}
       </div>
 
       {/* Signalement communautaire */}
       <section className="mb-6">
         <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">
-          État communautaire
+          {t('dab.community_state')}
         </h2>
         <SignalementBadge dabId={dab.id} currentEtat={dab.etat_communautaire} />
         <div className="mt-3">
@@ -54,7 +73,7 @@ export default function DABDetail({ dab, onSignalement }) {
       {/* Avis */}
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">
-          Avis utilisateurs
+          {t('dab.user_reviews')}
         </h2>
         {isAuthenticated && <AvisForm dabId={dab.id} onSuccess={() => {}} />}
         <AvisList dabId={dab.id} />

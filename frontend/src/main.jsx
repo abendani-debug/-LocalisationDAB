@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import 'leaflet/dist/leaflet.css';
+import './i18n';
 import L from 'leaflet';
 import App from './App';
 

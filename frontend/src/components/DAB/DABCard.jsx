@@ -1,4 +1,5 @@
-import { etatColor, statutLabel, etatLabel, formatDistance } from '../../utils/formatUtils';
+import { useTranslation } from 'react-i18next';
+import { etatColor, formatDistance } from '../../utils/formatUtils';
 
 const BADGE = {
   green:  'bg-green-600 text-white',
@@ -12,8 +13,25 @@ const ETAT_BADGE = {
   en_panne:   'bg-red-600   text-white',
 };
 
+const STATUT_KEY = {
+  actif:        'filters.active',
+  hors_service: 'filters.out_of_service',
+  maintenance:  'filters.maintenance',
+};
+
+const ETAT_KEY = {
+  disponible: 'common.state_available',
+  vide:       'common.state_empty',
+  en_panne:   'common.state_broken',
+};
+
 export default function DABCard({ dab, onSelect, onHighlight }) {
+  const { t } = useTranslation();
   const color = etatColor(dab);
+
+  const statutTrad = STATUT_KEY[dab.statut] ? t(STATUT_KEY[dab.statut]) : dab.statut;
+  const etatKey    = dab.etat_communautaire || dab.vote_dominant;
+  const etatTrad   = etatKey ? (ETAT_KEY[etatKey] ? t(ETAT_KEY[etatKey]) : etatKey) : null;
 
   return (
     <div
@@ -40,7 +58,7 @@ export default function DABCard({ dab, onSelect, onHighlight }) {
       <div className="flex items-center gap-2 flex-wrap">
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${BADGE[color] || 'bg-gray-100 text-gray-500'}`}>
           <span className="w-1.5 h-1.5 rounded-full bg-current inline-block" />
-          {statutLabel(dab.statut)}
+          {statutTrad}
         </span>
 
         {dab.banque_nom && (
@@ -50,7 +68,7 @@ export default function DABCard({ dab, onSelect, onHighlight }) {
         {(dab.etat_communautaire || dab.vote_dominant) && (
           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${ETAT_BADGE[dab.etat_communautaire || dab.vote_dominant] || 'bg-gray-100 text-gray-500'}`}
             style={{ opacity: dab.etat_communautaire ? 1 : 0.75 }}>
-            👥 {etatLabel(dab.etat_communautaire || dab.vote_dominant)}
+            👥 {etatTrad}
           </span>
         )}
       </div>

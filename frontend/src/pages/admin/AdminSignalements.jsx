@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axiosConfig';
 import { resoudreSignalements } from '../../api/signalementApi';
 import { etatLabel, formatDate } from '../../utils/formatUtils';
@@ -12,6 +13,7 @@ const ETAT_CLASS = {
 };
 
 export default function AdminSignalements() {
+  const { t } = useTranslation();
   const [dabs, setDabs]       = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,24 +27,24 @@ export default function AdminSignalements() {
   useEffect(load, []);
 
   const handleResoudre = async (dab) => {
-    if (!window.confirm(`Résoudre les signalements de "${dab.nom}" ?`)) return;
+    if (!window.confirm(t('admin.confirm_resolve', { name: dab.nom }))) return;
     try {
       await resoudreSignalements(dab.id);
-      toast.success('Signalements résolus.');
+      toast.success(t('admin.resolved'));
       load();
     } catch {
-      toast.error('Erreur lors de la résolution.');
+      toast.error(t('admin.resolve_error'));
     }
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Signalements actifs</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('admin.reports_title')}</h1>
 
       {loading ? (
         <div className="py-16 flex justify-center"><Spinner /></div>
       ) : dabs.length === 0 ? (
-        <p className="text-sm text-slate-500">Aucun signalement actif en ce moment.</p>
+        <p className="text-sm text-slate-500">{t('admin.no_reports')}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {dabs.map((dab) => {
@@ -65,7 +67,7 @@ export default function AdminSignalements() {
                   </div>
                   {dab.etat_communautaire && (
                     <p className="mt-1 text-xs text-gray-700">
-                      État déclenché : <strong>{etatLabel(dab.etat_communautaire)}</strong>
+                      {t('admin.triggered_state')} <strong>{etatLabel(dab.etat_communautaire)}</strong>
                       {dab.etat_communautaire_at && ` · ${formatDate(dab.etat_communautaire_at)}`}
                     </p>
                   )}
@@ -74,7 +76,7 @@ export default function AdminSignalements() {
                   onClick={() => handleResoudre(dab)}
                   className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex-shrink-0 transition-colors cursor-pointer"
                 >
-                  Résoudre
+                  {t('admin.resolve')}
                 </button>
               </div>
             );

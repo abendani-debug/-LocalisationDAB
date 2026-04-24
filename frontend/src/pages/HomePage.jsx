@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import MapView from '../components/Map/MapView';
 import DABList from '../components/DAB/DABList';
 import DABFilters from '../components/DAB/DABFilters';
@@ -13,6 +14,7 @@ const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
 /* ── Écran de permission géolocalisation ────────────────────── */
 function LocationPermissionScreen({ status, onAllow, onSkip }) {
+  const { t } = useTranslation();
   const requesting = status === 'requesting';
   const denied     = status === 'denied';
   const unavail    = status === 'unavailable';
@@ -24,23 +26,23 @@ function LocationPermissionScreen({ status, onAllow, onSkip }) {
       </div>
 
       <h2 className="text-xl font-bold text-gray-900 mb-2">
-        {denied   ? 'Localisation bloquée'    :
-         unavail  ? 'Position indisponible'   :
-         requesting ? 'Recherche de position…' :
-                     'Localiser votre position'}
+        {denied   ? t('location.blocked')    :
+         unavail  ? t('location.unavailable')   :
+         requesting ? t('location.searching') :
+                     t('location.locate')}
       </h2>
 
       <p className="text-sm text-slate-500 mb-6 max-w-xs leading-relaxed">
         {denied ? (
           isIOS
-            ? "La localisation est bloquée. Pour l'activer : Réglages → Confidentialité → Service de localisation → Safari → « Lors de l'utilisation »."
-            : "La localisation est bloquée. Pour l'activer : Paramètres de votre navigateur → Autorisations → Localisation → Autoriser pour ce site."
+            ? t('location.blocked_ios')
+            : t('location.blocked_browser')
         ) : unavail ? (
-          "Votre appareil ne peut pas déterminer votre position (GPS désactivé ou non disponible)."
+          t('location.unavailable_detail')
         ) : requesting ? (
-          "Veuillez autoriser l'accès à votre position dans la fenêtre de votre navigateur…"
+          t('location.requesting')
         ) : (
-          "Pour trouver les DAB près de chez vous, l'application a besoin d'accéder à votre position GPS."
+          t('location.explanation')
         )}
       </p>
 
@@ -54,10 +56,10 @@ function LocationPermissionScreen({ status, onAllow, onSkip }) {
             {requesting ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                En attente d'autorisation…
+                {t('location.awaiting')}
               </>
             ) : (
-              'Autoriser ma position'
+              t('location.allow')
             )}
           </button>
         )}
@@ -67,7 +69,7 @@ function LocationPermissionScreen({ status, onAllow, onSkip }) {
             onClick={onAllow}
             className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm shadow-md active:bg-blue-700"
           >
-            Réessayer
+            {t('location.retry')}
           </button>
         )}
 
@@ -76,7 +78,7 @@ function LocationPermissionScreen({ status, onAllow, onSkip }) {
           disabled={requesting}
           className="w-full py-3 rounded-xl bg-slate-100 text-slate-500 font-medium text-sm disabled:opacity-40"
         >
-          Continuer sans localisation
+          {t('location.skip')}
         </button>
       </div>
     </div>
@@ -85,21 +87,23 @@ function LocationPermissionScreen({ status, onAllow, onSkip }) {
 
 /* ── Bannière position par défaut ───────────────────────────── */
 function DefaultPositionBanner({ onRetry }) {
+  const { t } = useTranslation();
   return (
     <div className="absolute top-2 left-2 right-2 z-[600] bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
       <span className="text-base">⚠️</span>
-      <p className="text-xs text-amber-700 flex-1">Carte centrée sur Alger — position réelle non activée.</p>
+      <p className="text-xs text-amber-700 flex-1">{t('location.default_banner')}</p>
       <button
         onClick={onRetry}
         className="text-xs font-semibold text-blue-600 whitespace-nowrap border border-blue-200 bg-blue-50 rounded-lg px-2 py-1"
       >
-        Activer
+        {t('location.activate')}
       </button>
     </div>
   );
 }
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const { position, status, isDefault, requestLocation } = useGeolocation();
   const [skipped, setSkipped]             = useState(false);
   const [mapCenter, setMapCenter]         = useState(null);
@@ -182,7 +186,7 @@ export default function HomePage() {
                     : 'border-transparent text-slate-500 hover:text-gray-700'
                   }`}
               >
-                {p === 'list' ? `DAB (${dabs.length})` : 'Filtres'}
+                {p === 'list' ? `${t('dab.nearby')} (${dabs.length})` : t('filters.title')}
               </button>
             ))}
           </div>
@@ -231,7 +235,7 @@ export default function HomePage() {
       {/* Bouton flottant — au-dessus du bouton de localisation (bottom: 5rem + 46px) */}
       <button
         onClick={() => setDrawerOpen(true)}
-        aria-label="Voir les DAB à proximité"
+        aria-label={t('dab.see_nearby')}
         className="absolute z-[600] bg-blue-600 text-white rounded-full shadow-lg flex flex-col items-center justify-center gap-0.5 active:bg-blue-700 transition-colors"
         style={{ bottom: 'calc(5rem + 54px)', right: '0.75rem', width: '48px', height: '48px' }}
       >
@@ -261,7 +265,7 @@ export default function HomePage() {
           <div className="w-10 h-1 bg-slate-200 rounded-full mb-3" />
           <div className="flex items-center justify-between w-full">
             <h2 className="text-sm font-semibold text-slate-800">
-              {loading ? 'Chargement…' : `${dabs.length} DAB à proximité`}
+              {loading ? t('common.loading') : t('dab.nearby_count', { count: dabs.length })}
             </h2>
             <button
               onClick={() => setDrawerOpen(false)}

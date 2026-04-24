@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getDAB } from '../api/dabApi';
 import DABDetail from '../components/DAB/DABDetail';
 import Spinner from '../components/UI/Spinner';
@@ -7,6 +8,7 @@ import ErrorMessage from '../components/UI/ErrorMessage';
 import useSocket, { joinDABRoom, leaveDABRoom } from '../hooks/useSocket';
 
 export default function DABDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [dab, setDab]         = useState(null);
@@ -17,9 +19,9 @@ export default function DABDetailPage() {
     setLoading(true);
     getDAB(id)
       .then((res) => setDab(res.data))
-      .catch(() => setError('DAB introuvable.'))
+      .catch(() => setError(t('dab.not_found')))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -41,7 +43,7 @@ export default function DABDetailPage() {
     <div>
       <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #e5e7eb' }}>
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', fontSize: '0.9rem' }}>
-          ← Retour
+          {t('common.back')}
         </button>
       </div>
       <DABDetail dab={dab} onSignalement={(data) => {

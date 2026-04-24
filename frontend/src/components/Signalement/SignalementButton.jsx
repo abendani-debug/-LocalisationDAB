@@ -1,26 +1,28 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { submitSignalement } from '../../api/signalementApi';
 import toast from 'react-hot-toast';
 
-const ETATS = [
-  { key: 'disponible', label: 'Disponible', emoji: '✅', border: 'hover:border-green-500',  active: 'border-green-500 bg-green-50' },
-  { key: 'vide',       label: 'Vide',       emoji: '💸', border: 'hover:border-amber-500', active: 'border-amber-500 bg-amber-50' },
-  { key: 'en_panne',   label: 'En panne',   emoji: '🔧', border: 'hover:border-red-500',   active: 'border-red-500   bg-red-50'   },
-];
-
 export default function SignalementButton({ dabId, onSuccess }) {
+  const { t } = useTranslation();
   const [loading,  setLoading]  = useState(false);
   const [selected, setSelected] = useState(null);
+
+  const ETATS = [
+    { key: 'disponible', label: t('signalement.available'), emoji: '✅', border: 'hover:border-green-500',  active: 'border-green-500 bg-green-50' },
+    { key: 'vide',       label: t('signalement.empty'),     emoji: '💸', border: 'hover:border-amber-500', active: 'border-amber-500 bg-amber-50' },
+    { key: 'en_panne',   label: t('signalement.broken'),    emoji: '🔧', border: 'hover:border-red-500',   active: 'border-red-500   bg-red-50'   },
+  ];
 
   const handleSignal = async (etat) => {
     setSelected(etat);
     setLoading(true);
     try {
       const res = await submitSignalement(dabId, etat);
-      toast.success('Signalement enregistré !');
+      toast.success(t('signalement.success'));
       onSuccess?.(res.data);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Erreur lors du signalement.';
+      const msg = err.response?.data?.message || t('signalement.error');
       toast.error(msg);
       setSelected(null);
     } finally {
@@ -50,7 +52,7 @@ export default function SignalementButton({ dabId, onSuccess }) {
         onClick={() => selected && handleSignal(selected)}
         className="w-full h-11 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl text-sm font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed font-[inherit]"
       >
-        {loading ? 'Envoi…' : 'Envoyer le signalement'}
+        {loading ? t('signalement.sending') : t('signalement.send')}
       </button>
     </div>
   );

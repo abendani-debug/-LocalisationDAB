@@ -1,16 +1,19 @@
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { register as registerApi } from '../../api/authApi';
 import toast from 'react-hot-toast';
 
-const schema = z.object({
-  nom:      z.string().min(2, 'Nom requis (min 2 caractères)').max(100),
-  email:    z.string().email('Email invalide'),
-  password: z.string().min(8, 'Min 8 caractères').regex(/[A-Z]/, 'Doit contenir une majuscule').regex(/[0-9]/, 'Doit contenir un chiffre'),
-});
-
 export default function RegisterForm({ onSuccess }) {
+  const { t } = useTranslation();
+
+  const schema = z.object({
+    nom:      z.string().min(2, t('auth.name_required')).max(100),
+    email:    z.string().email(t('auth.email_invalid')),
+    password: z.string().min(8, t('auth.min_8_chars')).regex(/[A-Z]/, t('auth.must_uppercase')).regex(/[0-9]/, t('auth.must_digit')),
+  });
+
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema),
   });
@@ -18,10 +21,10 @@ export default function RegisterForm({ onSuccess }) {
   const onSubmit = async (data) => {
     try {
       await registerApi(data);
-      toast.success('Compte créé ! Vous pouvez vous connecter.');
+      toast.success(t('auth.account_created'));
       onSuccess?.();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de l\'inscription.');
+      toast.error(err.response?.data?.message || t('auth.register_error'));
     }
   };
 
@@ -59,7 +62,7 @@ export default function RegisterForm({ onSuccess }) {
         disabled={isSubmitting}
         className="w-full h-11 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-colors"
       >
-        {isSubmitting ? 'Inscription…' : 'Créer mon compte'}
+        {isSubmitting ? t('auth.registering') : t('auth.register_btn')}
       </button>
     </form>
   );

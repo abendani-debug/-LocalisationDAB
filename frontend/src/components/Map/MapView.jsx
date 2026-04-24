@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import useIsMobile from '../../hooks/useIsMobile';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
@@ -60,10 +61,11 @@ function MapClickHandler({ addMode, onMapClick, onCenterChange }) {
 
 /* ── Bouton flottant "Proposer un DAB" ──────────────────────── */
 function AddButton({ addMode, onClick, isMobile }) {
+  const { t } = useTranslation();
   const btn = (
     <button
       onClick={onClick}
-      title={addMode ? 'Cliquez sur la carte pour placer le marqueur' : 'Proposer un DAB ou une agence manquante'}
+      title={addMode ? t('propose.click_map') : t('propose.hint')}
       style={{
         position: isMobile ? 'fixed' : 'absolute',
         bottom: isMobile ? '62px' : '80px',
@@ -87,7 +89,7 @@ function AddButton({ addMode, onClick, isMobile }) {
         minHeight: '44px',
       }}
     >
-      {addMode ? '✕ Annuler' : (isMobile ? '+ Proposer' : '+ Proposer un DAB / agence')}
+      {addMode ? t('propose.cancel') : (isMobile ? t('propose.button_mobile') : t('propose.button_desktop'))}
     </button>
   );
 
@@ -97,6 +99,7 @@ function AddButton({ addMode, onClick, isMobile }) {
 
 /* ── Bandeau d'instruction en mode ajout ───────────────────── */
 function AddModeBanner({ isMobile }) {
+  const { t } = useTranslation();
   const banner = (
     <div style={{
       position: isMobile ? 'fixed' : 'absolute',
@@ -116,7 +119,7 @@ function AddModeBanner({ isMobile }) {
       textAlign: 'center',
       maxWidth: isMobile ? 'calc(100vw - 2rem)' : 'none',
     }}>
-      {isMobile ? 'Touchez la carte pour placer le DAB' : 'Cliquez sur la carte pour placer le nouveau DAB / agence'}
+      {isMobile ? t('propose.touch_map') : t('propose.click_map_new')}
     </div>
   );
 
@@ -125,6 +128,7 @@ function AddModeBanner({ isMobile }) {
 
 /* ── Composant principal ─────────────────────────────────────── */
 export default function MapView({ dabs = [], userPosition = null, onCenterChange, onSelectDAB, highlight = null, flyTo = null }) {
+  const { t } = useTranslation();
   const [addMode, setAddMode]           = useState(false);
   const [modalPosition, setModalPosition] = useState(null);
   const isMobile = useIsMobile();
@@ -145,7 +149,7 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
 
   const handleSuccess = () => {
     setModalPosition(null);
-    toast.success('Merci ! Votre proposition sera examinée par un administrateur.', { duration: 5000 });
+    toast.success(t('propose.thank_you'), { duration: 5000 });
   };
 
   return (

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { getAvis, deleteAvis } from '../../api/avisApi';
 import { formatDate, starRating } from '../../utils/formatUtils';
@@ -6,6 +7,7 @@ import toast from 'react-hot-toast';
 import Spinner from '../UI/Spinner';
 
 export default function AvisList({ dabId }) {
+  const { t } = useTranslation();
   const { user, isAdmin } = useAuth();
   const [data, setData]       = useState({ stats: null, avis: [] });
   const [loading, setLoading] = useState(true);
@@ -21,24 +23,24 @@ export default function AvisList({ dabId }) {
   useEffect(load, [dabId]);
 
   const handleDelete = async (avisId) => {
-    if (!window.confirm('Supprimer cet avis ?')) return;
+    if (!window.confirm(t('avis.confirm_delete'))) return;
     try {
       await deleteAvis(dabId, avisId);
-      toast.success('Avis supprimé.');
+      toast.success(t('avis.deleted'));
       load();
     } catch {
-      toast.error('Erreur lors de la suppression.');
+      toast.error(t('avis.delete_error'));
     }
   };
 
   if (loading) return <Spinner size="sm" />;
-  if (!data.avis.length) return <p className="text-sm text-slate-400">Aucun avis pour ce DAB.</p>;
+  if (!data.avis.length) return <p className="text-sm text-slate-400">{t('avis.no_reviews')}</p>;
 
   return (
     <div>
       {data.stats?.total > 0 && (
         <p className="text-xs text-slate-500 mb-3">
-          {data.stats.total} avis · Moyenne : {data.stats.moyenne}/5
+          {data.stats.total} {t('avis.reviews_avg')} {data.stats.moyenne}/5
         </p>
       )}
       <div className="flex flex-col gap-3">

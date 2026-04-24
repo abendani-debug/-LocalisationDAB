@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPropositions, approuverProposition, rejeterProposition } from '../../api/dabApi';
 import Spinner from '../../components/UI/Spinner';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ const TYPE_BADGE = {
 };
 
 export default function AdminPropositions() {
+  const { t } = useTranslation();
   const [propositions, setPropositions] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [busy, setBusy]                 = useState(null);
@@ -17,35 +19,35 @@ export default function AdminPropositions() {
     setLoading(true);
     getPropositions()
       .then((r) => setPropositions(r.data || []))
-      .catch(() => toast.error('Erreur lors du chargement.'))
+      .catch(() => toast.error(t('admin.load_error')))
       .finally(() => setLoading(false));
   };
 
   useEffect(load, []);
 
   const handleApprouver = async (id, nom) => {
-    if (!window.confirm(`Approuver "${nom}" et la rendre visible sur la carte ?`)) return;
+    if (!window.confirm(t('admin.confirm_approve', { name: nom }))) return;
     setBusy(id);
     try {
       await approuverProposition(id);
-      toast.success(`"${nom}" approuvée et publiée.`);
+      toast.success(t('admin.approved', { name: nom }));
       load();
     } catch {
-      toast.error('Erreur lors de l\'approbation.');
+      toast.error(t('admin.approve_error'));
     } finally {
       setBusy(null);
     }
   };
 
   const handleRejeter = async (id, nom) => {
-    if (!window.confirm(`Rejeter et supprimer définitivement "${nom}" ?`)) return;
+    if (!window.confirm(t('admin.confirm_reject', { name: nom }))) return;
     setBusy(id);
     try {
       await rejeterProposition(id);
-      toast.success(`"${nom}" rejetée.`);
+      toast.success(t('admin.rejected', { name: nom }));
       load();
     } catch {
-      toast.error('Erreur lors du rejet.');
+      toast.error(t('admin.reject_error'));
     } finally {
       setBusy(null);
     }
@@ -54,14 +56,14 @@ export default function AdminPropositions() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="m-0 text-2xl font-bold text-gray-900">Propositions communautaires</h1>
-        <span className="text-xs text-slate-500">{propositions.length} en attente</span>
+        <h1 className="m-0 text-2xl font-bold text-gray-900">{t('admin.proposals_title')}</h1>
+        <span className="text-xs text-slate-500">{propositions.length} {t('admin.pending')}</span>
       </div>
 
       {loading ? (
         <div className="py-16 flex justify-center"><Spinner /></div>
       ) : propositions.length === 0 ? (
-        <div className="py-16 text-center text-sm text-slate-500">Aucune proposition en attente.</div>
+        <div className="py-16 text-center text-sm text-slate-500">{t('admin.no_proposals')}</div>
       ) : (
         <div className="flex flex-col gap-3">
           {propositions.map((p) => {
@@ -97,21 +99,21 @@ export default function AdminPropositions() {
                     rel="noopener noreferrer"
                     className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-gray-700 border border-slate-200 rounded-lg text-xs font-semibold transition-colors"
                   >
-                    Voir carte
+                    {t('admin.view_map')}
                   </a>
                   <button
                     onClick={() => handleApprouver(p.id, p.nom)}
                     disabled={busy === p.id}
                     className="px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                   >
-                    Approuver
+                    {t('admin.approve')}
                   </button>
                   <button
                     onClick={() => handleRejeter(p.id, p.nom)}
                     disabled={busy === p.id}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
                   >
-                    Rejeter
+                    {t('admin.reject')}
                   </button>
                 </div>
               </div>

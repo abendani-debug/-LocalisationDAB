@@ -1,18 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useAuth from '../../hooks/useAuth';
 import useIsMobile from '../../hooks/useIsMobile';
+import i18n from '../../i18n';
 
 export default function Navbar() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
     navigate('/');
     setMenuOpen(false);
+  };
+
+  const handleLangSwitch = () => {
+    const newLang = i18n.language === 'fr' ? 'en' : 'fr';
+    i18n.changeLanguage(newLang);
+    localStorage.setItem('lang', newLang);
   };
 
   return (
@@ -32,7 +41,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {isAdmin && (
             <Link to="/admin" className="text-sm text-slate-500 hover:text-gray-900 no-underline transition-colors">
-              Admin
+              {t('nav.admin')}
             </Link>
           )}
           {isAuthenticated ? (
@@ -42,37 +51,51 @@ export default function Navbar() {
                 onClick={handleLogout}
                 className="h-[34px] px-4 rounded-lg border border-slate-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer bg-white"
               >
-                Déconnexion
+                {t('nav.logout')}
               </button>
             </>
           ) : (
             <>
               <Link to="/login" className="text-sm text-slate-500 hover:text-gray-900 no-underline transition-colors">
-                Connexion
+                {t('nav.login')}
               </Link>
               <Link to="/register" className="h-[34px] px-4 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors no-underline flex items-center">
-                Inscription
+                {t('nav.register')}
               </Link>
             </>
           )}
+          <button
+            onClick={handleLangSwitch}
+            className="h-[34px] px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-500 hover:bg-gray-50 transition-colors cursor-pointer bg-white"
+          >
+            FR | EN
+          </button>
         </div>
       )}
 
-      {/* Mobile hamburger */}
+      {/* Mobile hamburger + lang switcher */}
       {isMobile && (
-        <button
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Menu"
-          aria-expanded={menuOpen}
-          className="flex flex-col gap-[5px] justify-center p-2 bg-transparent border-none cursor-pointer"
-        >
-          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
-            style={{ transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none' }} />
-          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-opacity duration-150"
-            style={{ opacity: menuOpen ? 0 : 1 }} />
-          <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
-            style={{ transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleLangSwitch}
+            className="h-[30px] px-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-500 hover:bg-gray-50 transition-colors cursor-pointer bg-white"
+          >
+            FR | EN
+          </button>
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={t('nav.menu')}
+            aria-expanded={menuOpen}
+            className="flex flex-col gap-[5px] justify-center p-2 bg-transparent border-none cursor-pointer"
+          >
+            <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
+              style={{ transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none' }} />
+            <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-opacity duration-150"
+              style={{ opacity: menuOpen ? 0 : 1 }} />
+            <span className="block w-[22px] h-[2px] bg-gray-700 rounded-sm transition-transform duration-200"
+              style={{ transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none' }} />
+          </button>
+        </div>
       )}
 
       {/* Mobile dropdown */}
@@ -81,26 +104,26 @@ export default function Navbar() {
           {isAdmin && (
             <Link to="/admin" onClick={() => setMenuOpen(false)}
               className="text-gray-700 no-underline px-5 py-4 text-base border-b border-slate-100 hover:bg-slate-50">
-              ⚙️ Administration
+              {t('nav.administration')}
             </Link>
           )}
           {isAuthenticated ? (
             <>
-              <span className="text-slate-500 px-5 py-4 text-sm border-b border-slate-100">👤 {user?.nom}</span>
+              <span className="text-slate-500 px-5 py-4 text-sm border-b border-slate-100">{t('nav.user', { name: user?.nom })}</span>
               <button onClick={handleLogout}
                 className="bg-transparent border-none text-gray-700 px-5 py-4 text-left cursor-pointer text-base hover:bg-slate-50">
-                Déconnexion
+                {t('nav.logout')}
               </button>
             </>
           ) : (
             <>
               <Link to="/login" onClick={() => setMenuOpen(false)}
                 className="text-gray-700 no-underline px-5 py-4 text-base border-b border-slate-100 hover:bg-slate-50">
-                Connexion
+                {t('nav.login')}
               </Link>
               <Link to="/register" onClick={() => setMenuOpen(false)}
                 className="text-white no-underline px-5 py-4 text-base bg-blue-600 hover:bg-blue-700">
-                Inscription
+                {t('nav.register')}
               </Link>
             </>
           )}

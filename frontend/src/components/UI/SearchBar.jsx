@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-export default function SearchBar({ onSearch, placeholder = 'Rechercher un DABâ€¦' }) {
+export default function SearchBar({ onSearch, placeholder }) {
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
 
   const handleSubmit = (e) => {
@@ -15,7 +17,7 @@ export default function SearchBar({ onSearch, placeholder = 'Rechercher un DABâ€
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('common.search_placeholder')}
         className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-slate-400"
       />
     </form>

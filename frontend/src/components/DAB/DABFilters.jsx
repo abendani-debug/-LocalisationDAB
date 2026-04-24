@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../../api/axiosConfig';
-
-const STATUTS = [
-  { value: '',              label: 'Tous' },
-  { value: 'actif',         label: 'Actif' },
-  { value: 'hors_service',  label: 'Hors service' },
-  { value: 'maintenance',   label: 'Maintenance' },
-];
 
 const RAYONS = [
   { value: 1,  label: '1 km' },
@@ -46,8 +40,16 @@ function ChipRow({ label, items, activeValue, onSelect, getKey, getLabel }) {
 }
 
 export default function DABFilters({ onFiltersChange }) {
+  const { t } = useTranslation();
   const [banques, setBanques] = useState([]);
   const [filters, setFilters] = useState({ banque_id: '', statut: '', radius: 2 });
+
+  const STATUTS = [
+    { value: '',              label: t('filters.all') },
+    { value: 'actif',         label: t('filters.active') },
+    { value: 'hors_service',  label: t('filters.out_of_service') },
+    { value: 'maintenance',   label: t('filters.maintenance') },
+  ];
 
   useEffect(() => {
     api.get('/banques').then((r) => setBanques(r.data.data || [])).catch(() => {});
@@ -59,12 +61,12 @@ export default function DABFilters({ onFiltersChange }) {
     onFiltersChange(next);
   };
 
-  const banqueItems = [{ id: '', nom: 'Toutes' }, ...banques];
+  const banqueItems = [{ id: '', nom: t('filters.all_banks') }, ...banques];
 
   return (
     <div className="flex flex-col divide-y divide-slate-100">
       <ChipRow
-        label="Banque"
+        label={t('filters.bank')}
         items={banqueItems}
         activeValue={filters.banque_id}
         onSelect={(v) => handleChange('banque_id', v)}
@@ -72,7 +74,7 @@ export default function DABFilters({ onFiltersChange }) {
         getLabel={(b) => b.nom}
       />
       <ChipRow
-        label="Statut"
+        label={t('filters.status')}
         items={STATUTS}
         activeValue={filters.statut}
         onSelect={(v) => handleChange('statut', v)}
@@ -80,7 +82,7 @@ export default function DABFilters({ onFiltersChange }) {
         getLabel={(s) => s.label}
       />
       <ChipRow
-        label="Rayon"
+        label={t('filters.radius')}
         items={RAYONS}
         activeValue={filters.radius}
         onSelect={(v) => handleChange('radius', Number(v))}

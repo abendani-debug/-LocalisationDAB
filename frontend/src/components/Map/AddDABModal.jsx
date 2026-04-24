@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { proposerDAB } from '../../api/dabApi';
 import api from '../../api/axiosConfig';
 
-const TYPES = [
-  { val: 'atm',    icon: '🏧', label: 'Distributeur (ATM)' },
-  { val: 'agence', icon: '🏦', label: 'Agence bancaire'    },
-];
-
 export default function AddDABModal({ position, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [banques, setBanques] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [form, setForm]       = useState({ type_lieu: 'atm', nom: '', adresse: '', banque_id: '' });
+
+  const TYPES = [
+    { val: 'atm',    icon: '🏧', label: t('propose.type_atm') },
+    { val: 'agence', icon: '🏦', label: t('propose.type_bank') },
+  ];
 
   useEffect(() => {
     api.get('/banques').then((r) => setBanques(r.data.data || [])).catch(() => {});
@@ -53,7 +55,7 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
       <div className="bg-white rounded-xl w-full max-w-[440px] shadow-2xl p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="m-0 text-base font-bold text-gray-900">Proposer un lieu</h2>
+          <h2 className="m-0 text-base font-bold text-gray-900">{t('propose.modal_title')}</h2>
           <button
             onClick={onClose}
             className="bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
@@ -71,7 +73,7 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Type */}
           <div>
-            <span className={labelClass}>Type *</span>
+            <span className={labelClass}>{t('propose.type')}</span>
             <div className="flex gap-2">
               {TYPES.map(({ val, icon, label }) => (
                 <label
@@ -98,10 +100,10 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
 
           {/* Nom */}
           <div>
-            <label className={labelClass}>Nom *</label>
+            <label className={labelClass}>{t('propose.name')}</label>
             <input
               type="text"
-              placeholder={form.type_lieu === 'agence' ? 'Ex : BNA — Agence Bab Ezzouar' : 'Ex : ATM CPA — Rue Didouche Mourad'}
+              placeholder={form.type_lieu === 'agence' ? t('propose.placeholder_bank') : t('propose.placeholder_atm')}
               value={form.nom}
               onChange={(e) => set('nom', e.target.value)}
               maxLength={255}
@@ -112,9 +114,9 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
 
           {/* Banque */}
           <div>
-            <label className={labelClass}>Banque (optionnel)</label>
+            <label className={labelClass}>{t('propose.bank_optional')}</label>
             <select value={form.banque_id} onChange={(e) => set('banque_id', e.target.value)} className={inputClass}>
-              <option value="">— Sélectionner une banque —</option>
+              <option value="">{t('propose.select_bank')}</option>
               {banques.map((b) => (
                 <option key={b.id} value={b.id}>{b.nom}</option>
               ))}
@@ -123,10 +125,10 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
 
           {/* Adresse */}
           <div>
-            <label className={labelClass}>Adresse (optionnel)</label>
+            <label className={labelClass}>{t('propose.address_optional')}</label>
             <input
               type="text"
-              placeholder="Ex : 12 rue des frères Bouchama, Alger"
+              placeholder={t('propose.address_placeholder')}
               value={form.adresse}
               onChange={(e) => set('adresse', e.target.value)}
               maxLength={500}
@@ -146,20 +148,20 @@ export default function AddDABModal({ position, onClose, onSuccess }) {
               onClick={onClose}
               className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-gray-700 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
             >
-              Annuler
+              {t('propose.cancel_btn')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors"
             >
-              {loading ? 'Envoi…' : 'Soumettre la proposition'}
+              {loading ? t('propose.submitting') : t('propose.submit')}
             </button>
           </div>
         </form>
 
         <p className="mt-4 text-xs text-slate-400 text-center">
-          Votre proposition sera examinée par un administrateur avant publication.
+          {t('propose.notice')}
         </p>
       </div>
     </div>
