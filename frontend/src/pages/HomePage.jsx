@@ -107,7 +107,7 @@ export default function HomePage() {
   const searchPosition                    = mapCenter || position;
   const { dabs, loading, error, refetch, updateDAB } = useDABs(searchPosition, filters);
   const [panel, setPanel]                 = useState('list');
-  const [sheetOpen, setSheetOpen]         = useState(true);
+  const [drawerOpen, setDrawerOpen]       = useState(false);
   const [selectedDabId, setSelectedDabId] = useState(null);
   const [highlight, setHighlight]         = useState({ id: null, tick: 0 });
   const [flyTo, setFlyTo]                 = useState(null);
@@ -133,7 +133,7 @@ export default function HomePage() {
     setHighlight((prev) => ({ id, tick: prev.tick + 1 }));
     const dab = dabs.find((d) => d.id === id);
     if (dab) setFlyTo({ lat: dab.latitude, lng: dab.longitude });
-    if (isMobile) setSheetOpen(false);
+    if (isMobile) setDrawerOpen(false);
   }, [dabs, isMobile]);
 
   const handleDabUpdate = useCallback(({ dabId, etatCommunautaire, votes, totalVotes }) => {
@@ -215,11 +215,9 @@ export default function HomePage() {
   }
 
   /* ── Mobile ────────────────────────────────────────────────── */
-  const HANDLE_HEIGHT = 44;
-  const SHEET_HEIGHT  = '55vh';
-
   return (
     <div className="relative overflow-hidden" style={{ height: 'calc(100vh - 56px)' }}>
+      {/* Carte plein écran */}
       <div className="absolute inset-0">
         <MapView
           dabs={dabs} userPosition={!isDefault ? position : null}
@@ -230,47 +228,63 @@ export default function HomePage() {
 
       {showBanner && <DefaultPositionBanner onRetry={handleRetry} />}
 
-      <div
-        className="bottom-sheet absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-[0_-3px_16px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden z-[500]"
-        style={{ height: sheetOpen ? SHEET_HEIGHT : `${HANDLE_HEIGHT}px` }}
+      {/* Bouton flottant — au-dessus du bouton de localisation (bottom: 5rem + 46px) */}
+      <button
+        onClick={() => setDrawerOpen(true)}
+        aria-label="Voir les DAB à proximité"
+        className="absolute z-[600] bg-blue-600 text-white rounded-full shadow-lg flex flex-col items-center justify-center gap-0.5 active:bg-blue-700 transition-colors"
+        style={{ bottom: 'calc(5rem + 54px)', right: '0.75rem', width: '48px', height: '48px' }}
       >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h10" />
+        </svg>
+        <span className="text-[9px] font-bold leading-none">
+          {loading ? '…' : dabs.length}
+        </span>
+      </button>
+
+      {/* Fond semi-transparent — conditionnel */}
+      {drawerOpen && (
         <div
-          onClick={() => setSheetOpen((v) => !v)}
-          className="flex-shrink-0 flex items-center justify-between px-3 cursor-pointer select-none"
-          style={{ height: `${HANDLE_HEIGHT}px` }}
-        >
-          <div className="flex gap-1.5">
-            {['list', 'filters'].map((p) => (
-              <button
-                key={p}
-                onClick={(e) => { e.stopPropagation(); setPanel(p); if (!sheetOpen) setSheetOpen(true); }}
-                className={`h-7 px-3 rounded-full text-xs font-medium border transition-all cursor-pointer
-                  ${panel === p
-                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                    : 'border-slate-200 bg-transparent text-slate-500'
-                  }`}
-              >
-                {p === 'list' ? `DAB (${dabs.length})` : 'Filtres'}
-              </button>
-            ))}
+          className="absolute inset-0 z-[700] bg-black/30"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
+      {/* Panneau drawer — toujours monté, caché hors-écran quand fermé */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 z-[800] bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] flex flex-col transition-transform duration-300 ease-out ${drawerOpen ? 'translate-y-0' : 'translate-y-full'}`}
+        style={{ height: '82vh' }}
+      >
+        {/* En-tête */}
+        <div className="flex-shrink-0 flex flex-col items-center px-4 pt-3 pb-2 border-b border-slate-100">
+          <div className="w-10 h-1 bg-slate-200 rounded-full mb-3" />
+          <div className="flex items-center justify-between w-full">
+            <h2 className="text-sm font-semibold text-slate-800">
+              {loading ? 'Chargement…' : `${dabs.length} DAB à proximité`}
+            </h2>
+            <button
+              onClick={() => setDrawerOpen(false)}
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 text-base leading-none"
+            >
+              ✕
+            </button>
           </div>
-          <span
-            className="text-xs text-slate-400 inline-block transition-transform duration-300"
-            style={{ transform: sheetOpen ? 'rotate(180deg)' : 'none' }}
-          >
-            ▲
-          </span>
         </div>
 
+        {/* Filtres */}
+        <div className="flex-shrink-0 border-b border-slate-100">
+          <DABFilters onFiltersChange={setFilters} />
+        </div>
+
+        {/* Liste */}
         <div className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {panel === 'filters'
-            ? <DABFilters onFiltersChange={setFilters} />
-            : <DABList
-                dabs={dabs} loading={loading} error={error}
-                onRetry={refetch} onSelectDAB={setSelectedDabId}
-                onHighlightDAB={handleHighlight}
-              />
-          }
+          <DABList
+            dabs={dabs} loading={loading} error={error}
+            onRetry={refetch}
+            onSelectDAB={(id) => { setDrawerOpen(false); setSelectedDabId(id); }}
+            onHighlightDAB={handleHighlight}
+          />
         </div>
       </div>
 

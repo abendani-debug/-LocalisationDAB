@@ -88,7 +88,8 @@ export default function useGeolocation() {
     );
   }, [startWatch]);
 
-  const displayPosition = position || { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
+  const defaultPosition = useRef({ lat: DEFAULT_LAT, lng: DEFAULT_LNG });
+  const displayPosition = position || defaultPosition.current;
   const isDefault = status !== 'granted' || position === null;
 
   return { position: displayPosition, status, isDefault, requestLocation };
