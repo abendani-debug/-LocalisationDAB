@@ -28,7 +28,7 @@ export default function Navbar() {
     <nav className="bg-white border-b border-slate-200 px-4 h-14 flex items-center justify-between sticky top-0 z-[1000] shadow-sm">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2 no-underline">
-        <img src="/logo.png" alt="localiseMyDab logo" className="h-10 w-auto object-contain" />
+        <img src="/logo.png" alt="localiseMyDab logo" className="h-14 w-auto object-contain" />
       </Link>
 
       {/* Desktop nav */}
