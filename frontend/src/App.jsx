@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 import AuthProvider from './context/AuthContext';
 import useAuth from './hooks/useAuth';
 import Navbar from './components/UI/Navbar';
@@ -51,11 +53,13 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+    <I18nextProvider i18n={i18n}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
+    </I18nextProvider>
   );
 }

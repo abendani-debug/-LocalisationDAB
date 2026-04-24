@@ -20,7 +20,7 @@ export default function DABDetailModal({ dabId, onClose }) {
     setError(null);
     getDAB(dabId)
       .then((res) => setDab(res.data))
-      .catch(() => setError('DAB introuvable.'))
+      .catch(() => setError(t('dab.not_found')))
       .finally(() => setLoading(false));
   }, [dabId]);
 
