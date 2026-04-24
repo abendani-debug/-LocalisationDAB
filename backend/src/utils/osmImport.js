@@ -60,6 +60,16 @@ const ALGERIAN_CITIES = [
   { name: 'Tindouf',            lat: 27.6744, lng: -8.1375 },
   { name: 'Tamanrasset',        lat: 22.7851, lng:  5.5228 },
   { name: 'Illizi',             lat: 26.4833, lng:  8.4833 },
+  // --- Nouvelles wilayas (découpage 2021 — total 58) ---
+  { name: 'Timimoun',           lat: 29.2636, lng:  0.2325 },
+  { name: 'Bordj Badji Mokhtar',lat: 21.3294, lng:  0.9492 },
+  { name: 'Ouled Djellal',      lat: 34.4194, lng:  5.0697 },
+  { name: 'Beni Abbès',         lat: 30.1292, lng: -2.1694 },
+  { name: 'In Guezzam',         lat: 19.5667, lng:  5.7694 },
+  { name: 'Touggourt',          lat: 33.1003, lng:  6.0681 },
+  { name: 'Djanet',             lat: 24.5553, lng:  9.4844 },
+  { name: "El M'Ghair",         lat: 33.9442, lng:  5.9228 },
+  { name: 'El Meniaa',          lat: 30.5806, lng:  2.8794 },
 ];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
