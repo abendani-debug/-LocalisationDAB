@@ -77,7 +77,7 @@ export default function Navbar() {
 
       {/* Mobile dropdown */}
       {isMobile && menuOpen && (
-        <div className="absolute top-14 left-0 right-0 bg-white border-b border-slate-200 shadow-md z-[999] flex flex-col">
+        <div className="absolute top-14 right-0 w-64 bg-white border border-slate-200 rounded-bl-xl shadow-lg z-[999] flex flex-col overflow-hidden">
           {isAdmin && (
             <Link to="/admin" onClick={() => setMenuOpen(false)}
               className="text-gray-700 no-underline px-5 py-4 text-base border-b border-slate-100 hover:bg-slate-50">
