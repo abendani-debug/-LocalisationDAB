@@ -73,7 +73,7 @@ const BANK_CONFIGS = [
     bg: '#1B2F6B',
     text: '#F7C52D',
     label: 'AGB',
-    logoUrl: '/logos/agb_bank_logo.svg',
+    logoUrl: '/logos/agb_bank_logo.png',
   },
   {
     key: 'albaraka',
