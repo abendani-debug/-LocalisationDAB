@@ -20,9 +20,9 @@ const STATUT_KEY = {
 };
 
 const ETAT_KEY = {
-  disponible: 'common.state_available',
-  vide:       'common.state_empty',
-  en_panne:   'common.state_broken',
+  disponible: 'signalement.available',
+  vide:       'signalement.empty',
+  en_panne:   'signalement.broken',
 };
 
 export default function DABCard({ dab, onSelect, onHighlight }) {
