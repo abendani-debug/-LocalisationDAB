@@ -15,11 +15,11 @@ const USER_ICON = L.divIcon({
   className: '',
   html: `
     <div style="filter:drop-shadow(0 3px 8px rgba(0,0,0,0.35));display:flex;flex-direction:column;align-items:center;">
-      <img src="/logo.png" width="52" height="52" style="width:52px;height:52px;object-fit:contain;display:block;" />
-      <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid rgba(0,0,0,0.25);margin-top:-2px;"></div>
+      <img src="/bear-marker.png" width="72" height="72" style="width:72px;height:72px;object-fit:contain;display:block;" />
+      <div style="width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:14px solid rgba(0,0,0,0.25);margin-top:-2px;"></div>
     </div>`,
-  iconSize:   [52, 66],
-  iconAnchor: [26, 66],
+  iconSize:   [72, 88],
+  iconAnchor: [36, 88],
 });
 
 const DEFAULT_LNG  = parseFloat(import.meta.env.VITE_MAP_DEFAULT_LNG  || '3.0865');
