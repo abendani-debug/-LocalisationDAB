@@ -156,7 +156,7 @@ const BANK_CONFIGS = [
     bg: '#1A237E',
     text: '#fff',
     label: 'Fransabank',
-    logoUrl: null,
+    logoUrl: 'https://www.fransabank.dz/wp-content/themes/finbank-child/images/logo-fr.png',
   },
   {
     key: 'trust',
@@ -165,7 +165,7 @@ const BANK_CONFIGS = [
     bg: '#37474F',
     text: '#fff',
     label: 'Trust Bank',
-    logoUrl: null,
+    logoUrl: 'https://www.trustbank.dz/templates/trust/img/logo.png',
   },
   {
     key: 'citi',
