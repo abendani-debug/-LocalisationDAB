@@ -64,7 +64,7 @@ const BANK_CONFIGS = [
     bg: '#0D47A1',
     text: '#fff',
     label: 'CNEP',
-    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/21/Logo_CNEP_banque_1_DZ.svg',
+    logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Logo_CNEP_banque_DZ.svg',
   },
   {
     key: 'agb',

@@ -75,3 +75,192 @@ Stack : Node.js + Express + PostgreSQL (Render) / React + Vite (Vercel).
 ---
 
 *Rédigé le 2026-04-24 — Session Claude Code*
+
+---
+
+## Session du 2026-04-26
+
+### Contexte
+Nettoyage et assainissement de la base de données de production (Render PostgreSQL).
+Objectif : ne conserver que des DABs réels, correctement liés à leur banque.
+
+---
+
+### Réalisations
+
+#### 1. Ajout de nouvelles banques au référentiel
+Banques ajoutées manuellement dans la table `banques` (production) :
+| ID | Nom |
+|----|-----|
+| 1923 | ABC Banque (Arab Banking Corporation) |
+| 1924 | Fransabank |
+| 1925 | Housing Bank |
+| 1926 | Trust Bank Algeria |
+| 1927 | Arab Bank Algeria |
+| 1928 | Natixis Algérie |
+| 1929 | Banque d'Algérie *(supprimée en fin de session)* |
+
+#### 2. Nettoyage massif des entrées non-ATM
+Suppression de ~120+ entrées importées par erreur via Google Places (type=bank) :
+- Cafés, agences d'assurance, opérateurs télécom, agences de voyage, bureaux gouvernementaux
+- Méthode : patterns ILIKE / regex sur noms connus (CAAT, CIAR, CNMA, Ooredoo, Mobilis, etc.)
+
+#### 3. Liaison des DABs à leur banque (`banque_id`)
+Mise à jour en masse via `UPDATE dabs SET banque_id = X WHERE nom ILIKE/~* pattern` :
+- Variantes arabes et françaises de BNA, BEA, CPA, BADR, BDL, CNEP, AGB, Algérie Poste
+- Traductions anglaises (Agricultural Development Bank → BADR, National Bank of Algeria → BNA, etc.)
+- Dahabia / EDAHABIA → Algérie Poste (carte CCP)
+- 28 DABs ABC liés à ABC Banque (ID 1923)
+- Banque Extérieure BBA 109 → BEA (ID 3)
+- B.A.D.R Banque + Banque De l'Agriculture → BADR (ID 5)
+
+#### 4. Suppression de la Banque d'Algérie (banque centrale)
+- **Constat** : la Banque d'Algérie est la banque centrale (équivalent Banque de France) — elle n'a aucun DAB public
+- **Action** : suppression des 25 entrées "Bank of Algeria / بنك الجزائر / Banque Centrale" + retrait de la banque du référentiel
+- **Résultat** : entrée ID 1929 supprimée de la table `banques`
+
+---
+
+### État final de la base de données
+- **Total DABs** : 1 698
+- **Sans banque_id** : ~99 (tous des ATMs génériques légitimes : ATM, DAB, Distributeur, GAB, صراف آلي…)
+- **Répartition par banque** :
+
+| Banque | DABs |
+|--------|------|
+| BNA | 258 |
+| CNEP | 254 |
+| CPA | 239 |
+| BEA | 199 |
+| BADR | 138 |
+| Algérie Poste | 132 |
+| BDL | 87 |
+| SGA | 67 |
+| AGB | 63 |
+| ABC Banque | 28 |
+| Al Baraka | 26 |
+| BNP Paribas | 22 |
+| Natixis | 17 |
+| Trust Bank | 17 |
+| Fransabank | 16 |
+| Arab Bank | 16 |
+| Es Salam | 12 |
+| Housing Bank | 7 |
+
+---
+
+### Points en suspens
+- [ ] Taille de l'ours sur la carte à valider visuellement sur mobile
+- [ ] Tests unitaires backend (Phase 3)
+- [ ] Import Google Places initial (vérifier clé API)
+- [ ] README.md final
+- [ ] `bankConfig.js` : vérifier la correspondance visuelle pour Housing Bank, Trust Bank, Natixis, ABC, Arab Bank (logos/couleurs OK mais à tester sur prod)
+
+---
+
+*Rédigé le 2026-04-26 — Session Claude Code*
+
+---
+
+## Session du 2026-05-02
+
+### Contexte
+Mise en production sur VPS Octenium. Nettoyage BDD, configuration Nginx/SSL, déploiement frontend, corrections de bugs.
+
+---
+
+### Réalisations
+
+#### 1. Accès SSH Claude → VPS
+- Génération clé ed25519 : `ssh-keygen -t ed25519 -f /tmp/claude_vps_key -N ""`
+- Ajout clé publique dans `~/.ssh/authorized_keys` sur le VPS
+- Connexion directe : `ssh -i /tmp/claude_vps_key root@164.132.116.135`
+- Permet l'exécution de commandes SQL et bash directement depuis Claude Code
+
+#### 2. Nettoyage complet BDD VPS (PostgreSQL)
+**Avant** : 1 290 DABs, 1 286 sans banque_id, 13 banques
+**Après** : 1 124 DABs propres, 18 banques, 1 022 liés à leur banque, 102 génériques
+
+Opérations effectuées :
+- Ajout 6 banques : ABC Banque, Fransabank, Housing Bank, Trust Bank Algeria, Arab Bank Algeria, Natixis Algérie
+- Suppression Banque Es Salam (0 DABs)
+- Liaison Algérie Poste : variantes françaises + arabes (CCP, DAB Poste, بريد الجزائر...)
+- Suppression 150+ faux ATMs : assurances (CAAT, CIAR, Trust Assurance), télécoms (Djezzy, Mobilis, Algérie Télécom), agences de voyage, trésoreries, CNAS, cafés, leasing, administrations
+- Suppression Banque d'Algérie (banque centrale, pas de DABs publics)
+- Liaison toutes banques via patterns ILIKE français + arabes
+- Procédure complète sauvegardée dans `backend/docs/nettoyage_bdd.md`
+
+#### 3. Correction logo CNEP
+- URL Wikimedia `Logo_CNEP_banque_1_DZ.svg` retournait 404
+- Nouvelle URL fonctionnelle : `Logo_CNEP_banque_DZ.svg`
+- Fichier modifié : `frontend/src/utils/bankConfig.js`
+
+#### 4. Correction CORS
+- `CORS_ORIGIN=http://164.132.116.135` → `https://localizemaydab.com`
+- Fichier : `/var/www/LocalisationDAB/backend/.env` sur le VPS
+- Restart PM2 : `pm2 restart localisation-dab --update-env`
+
+#### 5. Correction URL API frontend (VITE_API_URL)
+- Le frontend buildé pointait vers Render (`https://localisationdab-1.onrender.com/api`)
+- Build de production VPS : `VITE_API_URL=https://localizemaydab.com/api npm run build`
+- Déploiement : `scp -r dist/. root@164.132.116.135:/var/www/LocalisationDAB/frontend/dist/`
+
+---
+
+### Bugs introduits et corrigés
+
+#### ❌ Bug 1 — `développement local` mappé sur BADR au lieu de BDL
+- **Erreur** : `UPDATE dabs SET banque_id = 5 WHERE ... nom ILIKE '%développement local%'`
+- **Cause** : BADR = agriculture, BDL = développement **local** — confusion
+- **Correction** : `UPDATE dabs SET banque_id = 6 WHERE banque_id = 5 AND nom ILIKE '%développement local%'`
+- **Règle** : BDL = Banque de Développement **Local** (ID 6), BADR = Banque d'Agriculture et Développement Rural (ID 5)
+
+#### ❌ Bug 2 — Build avec `VITE_API_URL=/api` → WebSocket cassé
+- **Erreur** : `wss://c/socket.io/` au lieu de `wss://localizemaydab.com/socket.io/`
+- **Cause** : `useSocket.js` fait `.replace('/api', '')` → `/api` devient `''` → socket.io produit une URL invalide
+- **Mauvaise tentative 1** : Remplacer par `window.location.origin` — n'a pas résolu (artefact de minification)
+- **Mauvaise tentative 2** : Passer `undefined` à socket.io — n'a pas résolu non plus
+- **Correction finale** : Builder avec URL absolue `VITE_API_URL=https://localizemaydab.com/api`
+- **Règle** : Pour le build VPS, toujours utiliser une URL absolue, jamais une URL relative comme `/api`
+
+#### ❌ Bug 3 — `pg_dump` version mismatch (16 vs 18)
+- **Erreur** : `server version: 18.3; pg_dump version: 16.13`
+- **Cause** : Render utilise PostgreSQL 18, le VPS a pg_dump 16 par défaut
+- **Correction** : Installer `postgresql-client-18` via le repo officiel PostgreSQL
+- **Règle** : Toujours vérifier la version de pg_dump avant un dump cross-server
+
+#### ❌ Bug 4 — Commande `pg_dump` avec URL en paramètre cassée par le shell
+- **Erreur** : Le shell interprétait l'URL comme une commande séparée
+- **Cause** : Caractères spéciaux (`@`, `//`) dans l'URL non échappés correctement
+- **Correction** : Utiliser les paramètres `-h`, `-U`, `-d` séparément + `PGPASSWORD=...`
+- **Règle** : Pour pg_dump avec URL complexe, préférer les flags séparés à la connection string
+
+---
+
+### Workflow de déploiement VPS établi
+
+```bash
+# 1. Build frontend avec URL absolue VPS
+cd frontend
+VITE_API_URL=https://localizemaydab.com/api npm run build
+
+# 2. Déployer sur VPS
+scp -i /tmp/claude_vps_key -r dist/. root@164.132.116.135:/var/www/LocalisationDAB/frontend/dist/
+
+# 3. Redémarrer backend si .env modifié
+ssh -i /tmp/claude_vps_key root@164.132.116.135 "source ~/.nvm/nvm.sh && pm2 restart localisation-dab --update-env"
+```
+
+---
+
+### Variables d'environnement correctes (VPS)
+
+| Variable | Valeur |
+|---|---|
+| `CORS_ORIGIN` | `https://localizemaydab.com` |
+| `NODE_ENV` | `production` |
+| `VITE_API_URL` (build) | `https://localizemaydab.com/api` |
+
+---
+
+*Rédigé le 2026-05-02 — Session Claude Code*
