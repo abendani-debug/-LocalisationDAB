@@ -42,14 +42,14 @@ export function LocateButton({ position }) {
         onClick={() => map.flyTo([position.lat, position.lng], 15)}
         title="Ma position"
         style={{
-          width: '34px', height: '34px', background: '#fff',
-          border: '2px solid rgba(0,0,0,0.2)', borderRadius: '4px',
-          cursor: 'pointer', fontSize: '1rem', display: 'flex',
+          width: '44px', height: '44px', background: '#fff',
+          border: '2px solid rgba(0,0,0,0.2)', borderRadius: '8px',
+          cursor: 'pointer', display: 'flex',
           alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)', padding: '4px',
         }}
       >
-        📍
+        <img src="/bear-marker.png" alt="Ma position" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </button>
     </div>
   );
