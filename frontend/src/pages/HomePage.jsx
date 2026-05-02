@@ -208,6 +208,7 @@ export default function HomePage() {
             dabs={dabs} userPosition={!isDefault ? position : null}
             onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId}
             highlight={highlight} flyTo={flyTo}
+            onRefresh={refetch}
           />
         </div>
 
@@ -227,6 +228,7 @@ export default function HomePage() {
           dabs={dabs} userPosition={!isDefault ? position : null}
           onCenterChange={setMapCenter} onSelectDAB={setSelectedDabId}
           highlight={highlight} flyTo={flyTo}
+          onRefresh={refetch}
         />
       </div>
 

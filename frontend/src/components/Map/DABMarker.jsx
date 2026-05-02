@@ -113,7 +113,7 @@ const createIcon = (dab, statusColor) => {
 
 /* ─── Composant ──────────────────────────────────────────────────── */
 
-export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTick, isActive }) {
+export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTick, isActive, isAdmin, onAdminEdit }) {
   const statusColor = etatColor(dab);
   const icon        = createIcon(dab, statusColor);
   const bankCfg     = getBankConfig(dab.banque_nom) || getBankConfig(dab.nom);
@@ -312,6 +312,22 @@ export default function DABMarker({ dab, userPosition, onSelectDAB, highlightTic
               🧭 Y aller
             </a>
           </div>
+
+          {/* Boutons admin */}
+          {isAdmin && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onAdminEdit?.(dab); }}
+              style={{
+                width: '100%', marginTop: '0.4rem', padding: '0.4rem',
+                background: '#fef3c7', color: '#92400e',
+                border: '1px solid #fcd34d', borderRadius: '0.4rem',
+                cursor: 'pointer', fontSize: '0.78rem', fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem',
+              }}
+            >
+              ✏️ Modération admin
+            </button>
+          )}
         </div>
       </Popup>
     </Marker>

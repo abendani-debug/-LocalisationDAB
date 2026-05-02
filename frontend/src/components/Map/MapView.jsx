@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import useIsMobile from '../../hooks/useIsMobile';
@@ -7,6 +7,8 @@ import L from 'leaflet';
 import DABMarker from './DABMarker';
 import { FlyToPosition, FlyToTarget, LocateButton } from './MapControls';
 import AddDABModal from './AddDABModal';
+import AdminQuickEditModal from './AdminQuickEditModal';
+import { AuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const DEFAULT_LAT  = parseFloat(import.meta.env.VITE_MAP_DEFAULT_LAT  || '36.7372');
@@ -111,10 +113,12 @@ function AddModeBanner({ isMobile }) {
 }
 
 /* ── Composant principal ─────────────────────────────────────── */
-export default function MapView({ dabs = [], userPosition = null, onCenterChange, onSelectDAB, highlight = null, flyTo = null }) {
+export default function MapView({ dabs = [], userPosition = null, onCenterChange, onSelectDAB, highlight = null, flyTo = null, onRefresh }) {
   const { t } = useTranslation();
+  const { isAdmin } = useContext(AuthContext);
   const [addMode, setAddMode]           = useState(false);
   const [modalPosition, setModalPosition] = useState(null);
+  const [adminEditDab, setAdminEditDab] = useState(null);
   const isMobile = useIsMobile();
 
   const center = userPosition
@@ -173,6 +177,8 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
             onSelectDAB={onSelectDAB}
             highlightTick={highlight?.id === dab.id ? highlight.tick : 0}
             isActive={highlight?.id === dab.id}
+            isAdmin={isAdmin}
+            onAdminEdit={setAdminEditDab}
           />
         ))}
       </MapContainer>
@@ -187,6 +193,15 @@ export default function MapView({ dabs = [], userPosition = null, onCenterChange
           position={modalPosition}
           onClose={() => setModalPosition(null)}
           onSuccess={handleSuccess}
+        />
+      )}
+
+      {/* Modal modération admin */}
+      {adminEditDab && (
+        <AdminQuickEditModal
+          dab={adminEditDab}
+          onClose={() => setAdminEditDab(null)}
+          onRefresh={() => { onRefresh?.(); setAdminEditDab(null); }}
         />
       )}
     </div>
